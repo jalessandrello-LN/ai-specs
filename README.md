@@ -11,13 +11,18 @@ It's highly recommended to be used along with Spec-Driven Development frameworks
 ├── ai-specs/                    # Main directory with all rules and configurations
 │   ├── specs/                   # Development standards and specifications
 │   │   ├── base-standards.mdc   # Core development rules (single source of truth)
-│   │   ├── backend-standards.mdc
+│   │   ├── ln-susc-api-standards.mdc
+│   │   ├── ln-susc-listener-standards.mdc
 │   │   ├── frontend-standards.mdc
 │   │   ├── documentation-standards.mdc
 │   │   ├── api-spec.yml         # OpenAPI specification
 │   │   ├── data-model.md        # Database and domain models
 │   │   └── development_guide.md
-│   ├── .commands/               # Reusable command prompts (plan, develop, enrich, etc.)
+│   ├── .commands/               # Reusable command prompts
+│   │   ├── lanacion/            # La Nación specific commands (SQS, repositories, etc.)
+│   │   ├── plan-backend-ticket.md
+│   │   ├── develop-backend.md
+│   │   └── ...
 │   ├── .agents/                 # Agent role definitions (backend, frontend, analyst, etc.)
 │   └── changes/                 # Feature implementation plans
 │       └── SCRUM-10_backend.md  # Demo: Position update feature plan
@@ -212,7 +217,10 @@ All development follows principles defined in `ai-specs/specs/base-standards.mdc
 
 ### Specific Standards
 
-- **Backend Standards**: `ai-specs/specs/backend-standards.mdc`
+- **API Backend Standards**: `ai-specs/specs/ln-susc-api-standards.mdc`
+  - *REST API development with .NET 6, Clean Architecture, CQRS, and Event Publishing*
+- **Listener Backend Standards**: `ai-specs/specs/ln-susc-listener-standards.mdc`
+  - *SQS event processing with .NET 6, idempotency, and event-driven patterns*
   - API development patterns
   - Database best practices
   - Security guidelines

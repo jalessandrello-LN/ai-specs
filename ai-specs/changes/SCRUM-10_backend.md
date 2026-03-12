@@ -72,7 +72,7 @@ This document provides a comprehensive step-by-step implementation plan for the 
 
 **Notes**: 
 - This must be the FIRST step before any code changes
-- Follow branch naming convention: `feature/[ticket-id]-backend` as specified in `backend-standards.mdc`
+- Follow branch naming convention: `feature/[ticket-id]-backend` as specified in `ln-susc-api-standards.mdc`
 - All subsequent commits will be made to this branch
 
 ---
@@ -1981,7 +1981,7 @@ The implementation supports partial updates, meaning:
 
 ### Important Reminders
 
-1. **Language Requirement**: All code, comments, error messages, and documentation MUST be in English (per `backend-standards.mdc`)
+1. **Language Requirement**: All code, comments, error messages, and documentation MUST be in English (per `ln-susc-api-standards.mdc`)
 
 2. **Testing Is Not Optional**: Comprehensive testing at ALL layers (validation, service, controller) is REQUIRED before the feature is considered complete
 

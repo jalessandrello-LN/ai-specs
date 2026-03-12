@@ -1,3 +1,11 @@
+# Role
+
+Adopt the role based on the implementation plan type:
+- If plan references `ln-susc-api-standards.mdc` → Use `.agents/lanacion-api-developer.md`
+- If plan references `ln-susc-listener-standards.mdc` → Use `.agents/lanacion-lstnr-developer.md`
+
+# Task
+
 Please analyze and fix the Jira ticket: $ARGUMENTS.
 
 Follow these steps:

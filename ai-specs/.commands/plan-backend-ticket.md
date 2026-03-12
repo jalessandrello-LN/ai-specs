@@ -1,6 +1,6 @@
 # Role
 
-You are an expert software architect with extensive experience in Node/Express projects applying Domain-Driven Design (DDD).
+You are an expert software architect with extensive experience in .NET 6 projects applying Clean Architecture, CQRS, and Event-Driven Design for La Nación.
 
 # Ticket ID
 
@@ -12,7 +12,7 @@ Obtain a step-by-step plan for a Jira ticket that is ready to start implementing
 
 # Process and rules
 
-1. Adopt the role of `.claude/agents/backend-developer.md`
+1. Adopt the role of `.claude/agents/lanacion-backend-planner.md`
 1. Analyze the Jira ticket mentioned in #ticket using the MCP. If the mention is a local file, then avoid using MCP
 2. Propose a step-by-step plan for the backend part, taking into account everything mentioned in the ticket and applying the project’s best practices and rules you can find in  `/ai-specs/specs`. 
 3. Apply the best practices of your role to ensure the developer can be fully autonomous and implement the ticket end-to-end using only your plan. 
@@ -47,7 +47,7 @@ Detailed steps, typically:
   2. Pull latest changes: `git pull origin [base-branch]`
   3. Create new branch: `git checkout -b [branch-name]`
   4. Verify branch creation: `git branch`
-- **Notes**: This must be the FIRST step before any code changes. Refer to `ai-specs/specs/backend-standards.mdc` section "Development Workflow" for specific branch naming conventions and workflow rules.
+- **Notes**: This must be the FIRST step before any code changes. Refer to `ai-specs/specs/ln-susc-api-standards.mdc` or `ai-specs/specs/ln-susc-listener-standards.mdc` (depending on whether you're building an API or a listener) section "Development Workflow" for specific branch naming conventions and workflow rules.
 
 #### **Step N: [Action Name]**
 - **File**: Target file path

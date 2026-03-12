@@ -1,0 +1,788 @@
+---
+description: Backend API development standards for La Nación Suscripciones using .NET 6, Clean Architecture, CQRS with MediatR, Dapper ORM, and Event-Driven patterns
+globs: ["**/*.cs", "**/appsettings*.json", "**/*.csproj"]
+alwaysApply: true
+---
+
+# La Nación API Backend Standards
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Technology Stack](#technology-stack)
+- [Architecture Overview](#architecture-overview)
+- [Domain-Driven Design Principles](#domain-driven-design-principles)
+- [SOLID Principles](#solid-principles)
+- [Coding Standards](#coding-standards)
+- [CQRS Implementation](#cqrs-implementation)
+- [API Design Standards](#api-design-standards)
+- [Event Publishing Patterns](#event-publishing-patterns)
+- [Database Patterns](#database-patterns)
+- [Testing Standards](#testing-standards)
+- [Performance Best Practices](#performance-best-practices)
+- [Security Best Practices](#security-best-practices)
+- [Development Workflow](#development-workflow)
+
+---
+
+## Overview
+
+This document defines standards for developing REST APIs at La Nación using the `LaNacion.Core.Templates.Web.Api.Minimal` template. The architecture follows Clean Architecture principles with CQRS pattern, event-driven design, and strict separation of concerns.
+
+## Technology Stack
+
+### Core Technologies
+- **.NET 6**: Runtime and framework
+- **C#**: Primary programming language
+- **ASP.NET Core Minimal APIs**: Web framework
+- **MediatR**: CQRS mediator pattern implementation
+- **Dapper**: Micro-ORM for database access
+- **FluentValidation**: Input validation
+
+### Database & Data Access
+- **MySQL**: Primary database (also supports SQL Server, PostgreSQL)
+- **Dapper**: Lightweight ORM with raw SQL
+- **Unit of Work**: Transaction management via `LaNacion.Core.Infraestructure.Data.Relational`
+
+### Messaging & Events
+- **AWS SQS**: Message queuing
+- **AWS EventBridge**: Event routing
+- **Outbox Pattern**: Transactional event publishing
+
+### Testing & Quality
+- **xUnit**: Testing framework
+- **Moq**: Mocking library
+- **FluentAssertions**: Assertion library
+
+### Infrastructure
+- **Serilog**: Structured logging
+- **AWS Secrets Manager**: Configuration management
+- **AutoMapper**: Object mapping
+- **System.ServiceModel**: WCF client integration (legacy)
+
+## Architecture Overview
+
+### Clean Architecture with CQRS
+
+The API follows Clean Architecture with vertical slicing through CQRS:
+
+```
+┌─────────────────────────────────────────────┐
+│         Presentation Layer                  │
+│  (Minimal API Endpoints, Controllers)       │
+└──────────────┬──────────────────────────────┘
+               │
+┌──────────────▼──────────────────────────────┐
+│         Application Layer                   │
+│  (Commands, Queries, Handlers, Validators)  │
+└──────────────┬──────────────────────────────┘
+               │
+┌──────────────▼──────────────────────────────┐
+│         Domain Layer                        │
+│  (Entities, Value Objects, Interfaces)      │
+└──────────────┬──────────────────────────────┘
+               │
+┌──────────────▼──────────────────────────────┐
+│         Infrastructure Layer                │
+│  (Repositories, External Services, DB)      │
+└─────────────────────────────────────────────┘
+```
+
+### Project Structure
+
+```
+LaNacion.Suscripciones.Api/
+├── LaNacion.Suscripciones.Domain/
+│   ├── Entities/              # Domain entities
+│   └── Events/                # Domain events
+├── LaNacion.Suscripciones.Application/
+│   ├── Commands/              # Write operations
+│   ├── Queries/               # Read operations
+│   ├── Handlers/              # MediatR handlers
+│   └── Validators/            # FluentValidation
+├── LaNacion.Suscripciones.Application.Interfaces/
+│   └── Persistance/           # Repository interfaces
+├── LaNacion.Suscripciones.Repositories.SQL/
+│   └── Implementations/       # Dapper repositories
+├── LaNacion.Suscripciones.Services/
+│   └── Adapters/              # WCF/External service adapters
+└── LaNacion.Suscripciones.Api/
+    ├── Endpoints/             # Minimal API endpoint definitions
+    ├── Program.cs             # Application entry point
+    └── appsettings.json       # Configuration
+```
+
+## Domain-Driven Design Principles
+
+### Entities
+
+Entities have unique identifiers and encapsulate business logic.
+
+```csharp
+public class Suscripcion
+{
+    public Guid Id { get; set; }
+    public string ClienteId { get; set; }
+    public string PlanId { get; set; }
+    public DateTime FechaInicio { get; set; }
+    public EstadoSuscripcion Estado { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string CreatedBy { get; set; }
+    
+    public void Activar()
+    {
+        if (Estado != EstadoSuscripcion.Pendiente)
+            throw new InvalidOperationException("Solo se pueden activar suscripciones pendientes");
+            
+        Estado = EstadoSuscripcion.Activa;
+    }
+}
+```
+
+### Value Objects
+
+Value objects are immutable and defined by their attributes.
+
+```csharp
+public record DireccionEntrega
+{
+    public string Calle { get; init; }
+    public string Numero { get; init; }
+    public string CodigoPostal { get; init; }
+    public string Ciudad { get; init; }
+    
+    public DireccionEntrega(string calle, string numero, string codigoPostal, string ciudad)
+    {
+        if (string.IsNullOrWhiteSpace(calle))
+            throw new ArgumentException("Calle es requerida", nameof(calle));
+            
+        Calle = calle;
+        Numero = numero;
+        CodigoPostal = codigoPostal;
+        Ciudad = ciudad;
+    }
+}
+```
+
+### Aggregates
+
+Aggregates maintain consistency boundaries.
+
+```csharp
+public class Suscripcion // Aggregate Root
+{
+    public Guid Id { get; set; }
+    public List<Producto> Productos { get; private set; } = new();
+    
+    public void AgregarProducto(Producto producto)
+    {
+        if (Productos.Any(p => p.Id == producto.Id))
+            throw new InvalidOperationException("Producto ya existe en la suscripción");
+            
+        Productos.Add(producto);
+    }
+}
+```
+
+### Repositories
+
+Repository interfaces define data access contracts.
+
+```csharp
+// Domain layer - Interface
+public interface ISuscripcionRepository : IRepository<Suscripcion, Guid>
+{
+    Task<Suscripcion> GetByClienteIdAsync(string clienteId);
+    Task<List<Suscripcion>> GetActivasAsync();
+}
+
+// Infrastructure layer - Implementation
+public class SuscripcionRepository : BaseRepository<Suscripcion, Guid>, ISuscripcionRepository
+{
+    public SuscripcionRepository(IContext context) : base(context, "Suscripciones") { }
+    
+    public async Task<Suscripcion> GetByClienteIdAsync(string clienteId)
+    {
+        const string sql = "SELECT * FROM Suscripciones WHERE ClienteId = @ClienteId";
+        return await _context.Connection.QueryFirstOrDefaultAsync<Suscripcion>(
+            sql, 
+            new { ClienteId = clienteId }, 
+            Transaction
+        );
+    }
+}
+```
+
+## SOLID Principles
+
+### Single Responsibility Principle (SRP)
+
+Each class has one reason to change.
+
+```csharp
+// Good: Separated concerns
+public class Suscripcion
+{
+    public void Activar() { /* business logic */ }
+}
+
+public class SuscripcionRepository
+{
+    public async Task SaveAsync(Suscripcion suscripcion) { /* persistence */ }
+}
+
+public class SuscripcionValidator : AbstractValidator<CreateSuscripcionCommand>
+{
+    public SuscripcionValidator() { /* validation rules */ }
+}
+```
+
+### Dependency Inversion Principle (DIP)
+
+Depend on abstractions, not concretions.
+
+```csharp
+// Good: Depends on interface
+public class CreateSuscripcionHandler : IRequestHandler<CreateSuscripcionCommand, Guid>
+{
+    private readonly ISuscripcionRepository _repository;
+    private readonly IUnitOfWork _uow;
+    
+    public CreateSuscripcionHandler(ISuscripcionRepository repository, IUnitOfWork uow)
+    {
+        _repository = repository;
+        _uow = uow;
+    }
+}
+```
+
+## Coding Standards
+
+### Naming Conventions
+
+**Classes and Interfaces:**
+```csharp
+public class SuscripcionService { }           // PascalCase
+public interface ISuscripcionRepository { }   // PascalCase with I prefix
+```
+
+**Methods and Properties:**
+```csharp
+public async Task<Suscripcion> GetByIdAsync(Guid id) { }  // PascalCase
+public string ClienteId { get; set; }                      // PascalCase
+```
+
+**Variables and Parameters:**
+```csharp
+var suscripcionId = Guid.NewGuid();  // camelCase
+public void Process(string clienteId) { }
+```
+
+**Constants:**
+```csharp
+private const int MAX_PRODUCTOS_POR_SUSCRIPCION = 10;  // UPPER_SNAKE_CASE
+```
+
+### Command Naming Convention
+
+Commands follow the pattern: `cmd-{verb}-{entity}`
+
+```csharp
+// Command class name
+public record CreateSuscripcionCommand : IRequest<Guid>
+{
+    public string ClienteId { get; init; }
+    public string PlanId { get; init; }
+}
+
+// Conceptual command name for logging/events
+// "cmd-crear-suscripcion"
+```
+
+### Event Naming Convention
+
+Events follow the pattern: `evt-{squad}-{entity}-{verb-past}`
+
+```csharp
+// Event class name
+public class SuscripcionCreada : INotification
+{
+    public Guid SuscripcionId { get; set; }
+    public string ClienteId { get; set; }
+    public DateTime OccurredOnUtc { get; set; }
+}
+
+// Event name for EventBridge
+// "evt-susc-suscripcion-creada"
+```
+
+### Language Requirements
+
+All code, comments, and messages MUST be in English:
+
+```csharp
+// Good
+throw new NotFoundException("Subscription not found");
+_logger.LogInformation("Processing subscription creation");
+
+// Avoid
+throw new NotFoundException("Suscripción no encontrada");
+_logger.LogInformation("Procesando creación de suscripción");
+```
+
+## CQRS Implementation
+
+### Commands (Write Operations)
+
+```csharp
+// Command
+public record CreateSuscripcionCommand : IRequest<Guid>
+{
+    public string ClienteId { get; init; }
+    public string PlanId { get; init; }
+    public List<string> ProductoIds { get; init; }
+}
+
+// Validator
+public class CreateSuscripcionCommandValidator : AbstractValidator<CreateSuscripcionCommand>
+{
+    public CreateSuscripcionCommandValidator()
+    {
+        RuleFor(x => x.ClienteId).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.PlanId).NotEmpty();
+        RuleFor(x => x.ProductoIds).NotEmpty();
+    }
+}
+
+// Handler
+public class CreateSuscripcionHandler : IRequestHandler<CreateSuscripcionCommand, Guid>
+{
+    private readonly ISuscripcionRepository _repository;
+    private readonly IUnitOfWork _uow;
+    private readonly IMessagePublisher _publisher;
+    
+    public CreateSuscripcionHandler(
+        ISuscripcionRepository repository,
+        IUnitOfWork uow,
+        IMessagePublisher publisher)
+    {
+        _repository = repository;
+        _uow = uow;
+        _publisher = publisher;
+    }
+    
+    public async Task<Guid> Handle(CreateSuscripcionCommand command, CancellationToken ct)
+    {
+        using (_uow.BeginTransaction())
+        {
+            var suscripcion = new Suscripcion
+            {
+                Id = Guid.NewGuid(),
+                ClienteId = command.ClienteId,
+                PlanId = command.PlanId,
+                Estado = EstadoSuscripcion.Pendiente,
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            await _repository.AddAsync(suscripcion);
+            
+            // Publish event inside transaction (Outbox Pattern)
+            await _publisher.CreateMessageAsync(
+                "evt-susc-suscripcion-creada",
+                new SuscripcionCreadaEvent
+                {
+                    SuscripcionId = suscripcion.Id,
+                    ClienteId = suscripcion.ClienteId,
+                    OccurredOnUtc = DateTime.UtcNow
+                }
+            );
+            
+            _uow.Commit();
+            return suscripcion.Id;
+        }
+    }
+}
+```
+
+### Queries (Read Operations)
+
+```csharp
+// Query
+public record GetSuscripcionByIdQuery : IRequest<SuscripcionDto>
+{
+    public Guid Id { get; init; }
+}
+
+// Handler
+public class GetSuscripcionByIdHandler : IRequestHandler<GetSuscripcionByIdQuery, SuscripcionDto>
+{
+    private readonly ISuscripcionRepository _repository;
+    
+    public GetSuscripcionByIdHandler(ISuscripcionRepository repository)
+    {
+        _repository = repository;
+    }
+    
+    public async Task<SuscripcionDto> Handle(GetSuscripcionByIdQuery query, CancellationToken ct)
+    {
+        var suscripcion = await _repository.GetByIdAsync(query.Id);
+        
+        if (suscripcion == null)
+            throw new NotFoundException($"Subscription {query.Id} not found");
+            
+        return new SuscripcionDto
+        {
+            Id = suscripcion.Id,
+            ClienteId = suscripcion.ClienteId,
+            Estado = suscripcion.Estado.ToString()
+        };
+    }
+}
+```
+
+## API Design Standards
+
+### REST Endpoint Naming
+
+Follow REST conventions with plural nouns and kebab-case:
+
+```csharp
+// Good: Plural nouns, no verbs
+app.MapPost("/api/v1/suscripciones", CreateSuscripcion);
+app.MapGet("/api/v1/suscripciones/{id}", GetSuscripcion);
+app.MapPut("/api/v1/suscripciones/{id}", UpdateSuscripcion);
+app.MapDelete("/api/v1/suscripciones/{id}", DeleteSuscripcion);
+app.MapGet("/api/v1/suscripciones/{id}/productos", GetProductos);
+
+// Avoid: Verbs in URLs
+app.MapPost("/api/v1/crear-suscripcion", ...);  // ❌
+app.MapGet("/api/v1/obtener-suscripcion/{id}", ...);  // ❌
+```
+
+### Endpoint Implementation
+
+```csharp
+public class SuscripcionEndpoints : IEndpointDefinition
+{
+    public void DefineEndpoints(WebApplication app)
+    {
+        app.MapPost("/api/v1/suscripciones", CreateSuscripcion)
+            .WithName("CreateSuscripcion")
+            .WithTags("Suscripciones")
+            .Produces<Guid>(StatusCodes.Status201Created)
+            .ProducesValidationProblem();
+    }
+    
+    private static async Task<IResult> CreateSuscripcion(
+        CreateSuscripcionCommand command,
+        IMediator mediator)
+    {
+        var id = await mediator.Send(command);
+        return Results.Created($"/api/v1/suscripciones/{id}", new { id });
+    }
+}
+```
+
+### HTTP Status Codes
+
+```csharp
+// 200 OK - Successful GET/PUT
+return Results.Ok(suscripcion);
+
+// 201 Created - Successful POST
+return Results.Created($"/api/v1/suscripciones/{id}", new { id });
+
+// 204 No Content - Successful DELETE
+return Results.NoContent();
+
+// 400 Bad Request - Validation error
+return Results.BadRequest(new { error = "Invalid data" });
+
+// 404 Not Found - Resource not found
+return Results.NotFound(new { error = "Subscription not found" });
+
+// 500 Internal Server Error - Unhandled exception
+return Results.Problem("An error occurred");
+```
+
+### Request/Response Patterns
+
+```csharp
+// Request DTO
+public record CreateSuscripcionRequest
+{
+    public string ClienteId { get; init; }
+    public string PlanId { get; init; }
+}
+
+// Response DTO
+public record SuscripcionResponse
+{
+    public Guid Id { get; init; }
+    public string ClienteId { get; init; }
+    public string Estado { get; init; }
+    public DateTime CreatedAt { get; init; }
+}
+
+// Error Response
+public record ErrorResponse
+{
+    public string Message { get; init; }
+    public string Code { get; init; }
+    public Dictionary<string, string[]> Errors { get; init; }
+}
+```
+
+## Event Publishing Patterns
+
+### Outbox Pattern
+
+Events are published inside the same transaction as entity changes:
+
+```csharp
+public async Task<Guid> Handle(CreateSuscripcionCommand command, CancellationToken ct)
+{
+    using (_uow.BeginTransaction())
+    {
+        // 1. Persist entity
+        await _repository.AddAsync(suscripcion);
+        
+        // 2. Publish event (stored in Outbox table)
+        await _publisher.CreateMessageAsync(
+            "evt-susc-suscripcion-creada",
+            new SuscripcionCreadaEvent { ... }
+        );
+        
+        // 3. Commit transaction (both entity and event)
+        _uow.Commit();
+    }
+}
+```
+
+### Event Structure
+
+```csharp
+public class SuscripcionCreadaEvent
+{
+    public Guid SuscripcionId { get; set; }
+    public string ClienteId { get; set; }
+    public string PlanId { get; set; }
+    public DateTime OccurredOnUtc { get; set; }
+}
+```
+
+### EventBridge Integration
+
+Events are routed through EventBridge with detail-type:
+
+```json
+{
+  "DetailType": "VentasAlta",
+  "Source": "suscripciones-api",
+  "EventBusName": "suscripciones-prod-eventbridge-main",
+  "Detail": {
+    "eventName": "evt-susc-suscripcion-creada",
+    "subscriptionId": "sub-123",
+    "customerId": "cust-456",
+    "occurredOnUtc": "2026-01-22T10:30:00Z"
+  }
+}
+```
+
+## Database Patterns
+
+### Dapper with Unit of Work
+
+```csharp
+public class SuscripcionRepository : BaseRepository<Suscripcion, Guid>, ISuscripcionRepository
+{
+    public SuscripcionRepository(IContext context) : base(context, "Suscripciones") { }
+    
+    public override async Task<Guid> AddAsync(Suscripcion entity, CancellationToken ct = default)
+    {
+        const string sql = @"
+            INSERT INTO Suscripciones(Id, ClienteId, PlanId, Estado, CreatedAt)
+            VALUES (@Id, @ClienteId, @PlanId, @Estado, @CreatedAt)";
+            
+        await _context.Connection.ExecuteAsync(sql, entity, Transaction);
+        return entity.Id;
+    }
+    
+    public async Task<Suscripcion> GetByIdAsync(Guid id)
+    {
+        const string sql = "SELECT * FROM Suscripciones WHERE Id = @Id";
+        return await _context.Connection.QueryFirstOrDefaultAsync<Suscripcion>(
+            sql,
+            new { Id = id },
+            Transaction
+        );
+    }
+}
+```
+
+### Transaction Management
+
+```csharp
+// Always use Unit of Work for transactions
+using (_uow.BeginTransaction())
+{
+    await _repository.AddAsync(entity);
+    await _publisher.CreateMessageAsync("event-name", eventData);
+    _uow.Commit();
+}
+```
+
+### Dependency Injection
+
+```csharp
+// Program.cs or Extensions
+services.AddScoped<ISuscripcionRepository, SuscripcionRepository>();
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+```
+
+## Testing Standards
+
+### Unit Testing with xUnit
+
+```csharp
+public class CreateSuscripcionHandlerTests
+{
+    private readonly Mock<ISuscripcionRepository> _repositoryMock;
+    private readonly Mock<IUnitOfWork> _uowMock;
+    private readonly Mock<IMessagePublisher> _publisherMock;
+    private readonly CreateSuscripcionHandler _handler;
+    
+    public CreateSuscripcionHandlerTests()
+    {
+        _repositoryMock = new Mock<ISuscripcionRepository>();
+        _uowMock = new Mock<IUnitOfWork>();
+        _publisherMock = new Mock<IMessagePublisher>();
+        _handler = new CreateSuscripcionHandler(
+            _repositoryMock.Object,
+            _uowMock.Object,
+            _publisherMock.Object
+        );
+    }
+    
+    [Fact]
+    public async Task Handle_ValidCommand_CreatesSuscripcion()
+    {
+        // Arrange
+        var command = new CreateSuscripcionCommand
+        {
+            ClienteId = "CLI-123",
+            PlanId = "PLAN-456"
+        };
+        
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+        
+        // Assert
+        result.Should().NotBeEmpty();
+        _repositoryMock.Verify(x => x.AddAsync(It.IsAny<Suscripcion>(), It.IsAny<CancellationToken>()), Times.Once);
+        _uowMock.Verify(x => x.Commit(), Times.Once);
+    }
+}
+```
+
+### Test Coverage Requirements
+
+- Minimum 80% code coverage
+- Test all happy paths
+- Test all error scenarios
+- Test validation rules
+- Test transaction rollback
+
+## Performance Best Practices
+
+### Async/Await
+
+Always use async/await for I/O operations:
+
+```csharp
+// Good
+public async Task<Suscripcion> GetByIdAsync(Guid id)
+{
+    return await _repository.GetByIdAsync(id);
+}
+
+// Avoid blocking calls
+public Suscripcion GetById(Guid id)
+{
+    return _repository.GetByIdAsync(id).Result;  // ❌
+}
+```
+
+### Database Query Optimization
+
+```csharp
+// Good: Select only needed fields
+const string sql = "SELECT Id, ClienteId, Estado FROM Suscripciones WHERE Id = @Id";
+
+// Avoid: Select all fields when not needed
+const string sql = "SELECT * FROM Suscripciones WHERE Id = @Id";  // ❌
+```
+
+## Security Best Practices
+
+### Input Validation
+
+Always validate inputs with FluentValidation:
+
+```csharp
+public class CreateSuscripcionCommandValidator : AbstractValidator<CreateSuscripcionCommand>
+{
+    public CreateSuscripcionCommandValidator()
+    {
+        RuleFor(x => x.ClienteId)
+            .NotEmpty()
+            .MaximumLength(50)
+            .Matches("^[A-Z0-9-]+$");
+    }
+}
+```
+
+### Secrets Management
+
+Never hardcode credentials:
+
+```csharp
+// Good: Use AWS Secrets Manager or User Secrets
+var connectionString = configuration["ConnectionStrings:Default"];
+
+// Avoid: Hardcoded credentials
+var connectionString = "Server=localhost;Database=db;User=admin;Password=123";  // ❌
+```
+
+## Development Workflow
+
+### Git Workflow
+
+```bash
+# Create feature branch
+git checkout -b feature/SCRUM-123-backend
+
+# Commit with descriptive messages
+git commit -m "feat: add create subscription endpoint"
+
+# Push and create PR
+git push origin feature/SCRUM-123-backend
+```
+
+### Branch Naming
+
+- Feature: `feature/SCRUM-123-backend`
+- Bugfix: `bugfix/SCRUM-456-backend`
+- Hotfix: `hotfix/SCRUM-789-backend`
+
+### Development Scripts
+
+```bash
+dotnet build                    # Build solution
+dotnet test                     # Run tests
+dotnet run --project Api        # Run API locally
+```
+
+---
+
+This document serves as the foundation for maintaining code quality and consistency across La Nación API development. All team members should follow these practices to ensure a maintainable, scalable, and testable codebase.

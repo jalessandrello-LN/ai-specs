@@ -1,0 +1,5 @@
+description = "../../ai-specs/.commands/commit.md"
+
+prompt = """
+../../ai-specs/.commands/commit.md
+"""

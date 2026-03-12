@@ -1,0 +1,5 @@
+description = "../../ai-specs/.commands/develop-backend.md"
+
+prompt = """
+../../ai-specs/.commands/develop-backend.md
+"""

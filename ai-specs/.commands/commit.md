@@ -50,7 +50,7 @@ If the user **explicitly** requested no git operations (e.g. "no PR", "only comm
 ## 3. Commit message
 
 - Write the commit message **in English** (per `ai-specs/specs/base-standards.mdc`).
-- Make it **descriptive** (per Git Workflow in `backend-standards.mdc` and `frontend-standards.mdc`).
+- Make it **descriptive** (per Git Workflow in `ln-susc-api-standards.mdc`, `ln-susc-listener-standards.mdc` and `frontend-standards.mdc`).
 - Structure it so that:
   - **Subject line**: Short, imperative summary (e.g. "Add candidate filters to position list", "Fix validation for application deadline"). Optionally prefix with a scope or ticket id (e.g. `SCRUM-123: Add candidate filters`).
   - **Body** (if needed): Bullet points or short paragraphs describing what changed and why (areas touched, new behavior, fixes). Reference ticket IDs here if they apply.
@@ -78,7 +78,8 @@ If the user **explicitly** requested no git operations (e.g. "no PR", "only comm
 # References
 
 - `ai-specs/specs/base-standards.mdc`: English-only for commit messages and technical artifacts.
-- `ai-specs/specs/backend-standards.mdc` and `ai-specs/specs/frontend-standards.mdc`: Git Workflow (feature branches, descriptive commits, small focused branches).
+- `ai-specs/specs/ln-susc-api-standards.mdc` and `ai-specs/specs/ln-susc-listener-standards.mdc`: Git Workflow for backend (feature branches, descriptive commits, small focused branches).
+- `ai-specs/specs/frontend-standards.mdc`: Git Workflow for frontend (feature branches, descriptive commits, small focused branches).
 - `ai-specs/.commands/develop-backend.md`: Use `gh` for GitHub and PR creation; optional ticket-based branch and PR linking.
 
 # Notes
