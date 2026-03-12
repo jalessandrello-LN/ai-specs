@@ -1,7 +1,5 @@
-description = "Backend Developer Agent"
+description = "../../.agent/agents/backend-developer-nodejs.md"
 
 prompt = """
-```chatagent
-../../ai-specs/.agents/backend-developer.md
-```
+../../.agent/agents/backend-developer-nodejs.md
 """

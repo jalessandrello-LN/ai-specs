@@ -1,7 +1,5 @@
-description = "Product Strategy Analyst Agent"
+description = "../../.agent/agents/product-strategy-analyst.md"
 
 prompt = """
-```chatagent
-../../ai-specs/.agents/product-strategy-analyst.md
-```
+../../.agent/agents/product-strategy-analyst.md
 """

@@ -1,0 +1,3 @@
+```chatagent
+../../ai-specs/.agents/frontend-developer.md
+```

@@ -1,0 +1,7 @@
+description = "Backend Developer Agent"
+
+prompt = """
+```chatagent
+../../ai-specs/.agents/backend-developer.md
+```
+"""
