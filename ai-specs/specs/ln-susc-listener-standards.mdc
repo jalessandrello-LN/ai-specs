@@ -283,18 +283,15 @@ namespace LaNacion.Suscripciones.SqsRdr.Application
         private readonly ILogger<SuscripcionCreadaProcessor> _logger;
         private readonly IUnitOfWork _uow;
         private readonly ISuscripcionRepository _repository;
-        private readonly IMensajesRecibidosRepository _mensajesRepository;
 
         public SuscripcionCreadaProcessor(
             ILogger<SuscripcionCreadaProcessor> logger,
             IUnitOfWork uow,
-            ISuscripcionRepository repository,
-            IMensajesRecibidosRepository mensajesRepository)
+            ISuscripcionRepository repository)
         {
             _logger = logger;
             _uow = uow;
             _repository = repository;
-            _mensajesRepository = mensajesRepository;
         }
 
         public async Task<ProcessResult> Handle(SuscripcionCreada @event, CancellationToken ct)
@@ -314,22 +311,15 @@ namespace LaNacion.Suscripciones.SqsRdr.Application
                     };
                 }
 
-                // Idempotency check
-                var messageId = $"evt-susc-suscripcion-creada-{@event.Id}";
-                var alreadyProcessed = await _mensajesRepository.ExistsAsync(messageId);
-                
-                if (alreadyProcessed)
-                {
-                    _logger.LogInformation("Message already processed, skipping");
-                    return new ProcessResult { Succed = true, ErrorDescription = "" };
-                }
+                // Nota: La verificación de idempotencia se realiza automáticamente 
+                // en la clase base SqsQueueConsumerService<T>. 
+                // Si el flujo entra aquí, garantizado que es la primera vez.
 
                 // Check if entity already exists
                 var existing = await _repository.GetByIdAsync(@event.Id);
                 if (existing != null)
                 {
-                    _logger.LogInformation("Entity already exists, marking as processed");
-                    await _mensajesRepository.AddAsync(messageId);
+                    _logger.LogInformation("Entity already exists, skipping");
                     return new ProcessResult { Succed = true, ErrorDescription = "" };
                 }
 
@@ -347,7 +337,6 @@ namespace LaNacion.Suscripciones.SqsRdr.Application
                     };
 
                     await _repository.AddAsync(suscripcion);
-                    await _mensajesRepository.AddAsync(messageId);
                     
                     _uow.Commit();
                 }
@@ -434,88 +423,10 @@ The `SqsQueueConsumerService<T>` handles:
 
 ## Idempotency Implementation
 
-### MensajesRecibidos Table
-
-```sql
-CREATE TABLE MensajesRecibidos (
-    MessageId VARCHAR(255) PRIMARY KEY,
-    ReceivedAt DATETIME NOT NULL,
-    ProcessedAt DATETIME NOT NULL
-);
-```
-
-### Repository Interface
-
-```csharp
-public interface IMensajesRecibidosRepository
-{
-    Task<bool> ExistsAsync(string messageId);
-    Task AddAsync(string messageId);
-}
-```
-
-### Repository Implementation
-
-```csharp
-public class MensajesRecibidosRepository : IMensajesRecibidosRepository
-{
-    private readonly IContext _context;
-    
-    public MensajesRecibidosRepository(IContext context)
-    {
-        _context = context;
-    }
-    
-    public async Task<bool> ExistsAsync(string messageId)
-    {
-        const string sql = "SELECT COUNT(1) FROM MensajesRecibidos WHERE MessageId = @MessageId";
-        var count = await _context.Connection.ExecuteScalarAsync<int>(
-            sql, 
-            new { MessageId = messageId }
-        );
-        return count > 0;
-    }
-    
-    public async Task AddAsync(string messageId)
-    {
-        const string sql = @"
-            INSERT INTO MensajesRecibidos(MessageId, ReceivedAt, ProcessedAt)
-            VALUES (@MessageId, @ReceivedAt, @ProcessedAt)";
-            
-        await _context.Connection.ExecuteAsync(sql, new
-        {
-            MessageId = messageId,
-            ReceivedAt = DateTime.UtcNow,
-            ProcessedAt = DateTime.UtcNow
-        });
-    }
-}
-```
-
-### Idempotency Pattern
-
-```csharp
-public async Task<ProcessResult> Handle(SuscripcionCreada @event, CancellationToken ct)
-{
-    // 1. Generate unique message ID
-    var messageId = $"evt-susc-suscripcion-creada-{@event.Id}";
-    
-    // 2. Check if already processed
-    var alreadyProcessed = await _mensajesRepository.ExistsAsync(messageId);
-    if (alreadyProcessed)
-    {
-        return new ProcessResult { Succed = true, ErrorDescription = "" };
-    }
-    
-    // 3. Process in transaction
-    using (_uow.BeginTransaction())
-    {
-        await _repository.AddAsync(entity);
-        await _mensajesRepository.AddAsync(messageId);  // Mark as processed
-        _uow.Commit();
-    }
-}
-```
+La librería base `LaNacion.Core.Infraestructure.Events.Suscriber` ya implementa la idempotencia de forma transparente usando `IReceivedMessageRepository`.
+- No es necesario manejar una tabla `MensajesRecibidos` dentro de cada dominio.
+- No es necesario inyectar `IMensajesRecibidosRepository` en los processors o handlers.
+- El handler sólo se invocará si el mensaje no ha sido procesado exitosamente con anterioridad.
 
 ## Database Patterns
 
@@ -545,7 +456,6 @@ public class SuscripcionRepository : BaseRepository<Suscripcion, Guid>, ISuscrip
 using (_uow.BeginTransaction())
 {
     await _repository.AddAsync(entity);
-    await _mensajesRepository.AddAsync(messageId);
     _uow.Commit();
 }
 ```
@@ -555,7 +465,6 @@ using (_uow.BeginTransaction())
 ```csharp
 // Program.cs
 services.AddScoped<ISuscripcionRepository, SuscripcionRepository>();
-services.AddScoped<IMensajesRecibidosRepository, MensajesRecibidosRepository>();
 services.AddScoped<IUnitOfWork, UnitOfWork>();
 ```
 
@@ -575,15 +484,13 @@ public class SuscripcionCreadaProcessorTests
     public SuscripcionCreadaProcessorTests()
     {
         _repositoryMock = new Mock<ISuscripcionRepository>();
-        _mensajesMock = new Mock<IMensajesRecibidosRepository>();
         _uowMock = new Mock<IUnitOfWork>();
         _loggerMock = new Mock<ILogger<SuscripcionCreadaProcessor>>();
         
         _processor = new SuscripcionCreadaProcessor(
             _loggerMock.Object,
             _uowMock.Object,
-            _repositoryMock.Object,
-            _mensajesMock.Object
+            _repositoryMock.Object
         );
     }
     
@@ -598,8 +505,6 @@ public class SuscripcionCreadaProcessorTests
             PlanId = "PLAN-456"
         };
         
-        _mensajesMock.Setup(x => x.ExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(false);
         _repositoryMock.Setup(x => x.GetByIdAsync(@event.Id))
             .ReturnsAsync((Suscripcion)null);
         
@@ -609,18 +514,17 @@ public class SuscripcionCreadaProcessorTests
         // Assert
         result.Succed.Should().BeTrue();
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<Suscripcion>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mensajesMock.Verify(x => x.AddAsync(It.IsAny<string>()), Times.Once);
         _uowMock.Verify(x => x.Commit(), Times.Once);
     }
     
     [Fact]
-    public async Task Handle_DuplicateMessage_SkipsProcessing()
+    public async Task Handle_EntityAlreadyExists_SkipsProcessing()
     {
         // Arrange
         var @event = new SuscripcionCreada { Id = Guid.NewGuid() };
         
-        _mensajesMock.Setup(x => x.ExistsAsync(It.IsAny<string>()))
-            .ReturnsAsync(true);
+        _repositoryMock.Setup(x => x.GetByIdAsync(@event.Id))
+            .ReturnsAsync(new Suscripcion());
         
         // Act
         var result = await _processor.Handle(@event, CancellationToken.None);
