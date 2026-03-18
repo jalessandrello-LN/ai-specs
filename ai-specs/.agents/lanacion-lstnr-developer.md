@@ -161,7 +161,7 @@ namespace LaNacion.Core.Templates.SqsRdr.Application
 ```csharp
 using System;
 using LaNacion.Core.Templates.SqsRdr.Domain;
-using LaNacion.Core.Infraestructure.Data.Interfaces;
+using LaNacion.Core.Infraestructure.Data;
 
 namespace LaNacion.Core.Templates.SqsRdr.Application.Interfaces.Persistance
 {
@@ -188,6 +188,11 @@ namespace LaNacion.Core.Templates.SqsRdr.Repositories.SQL
     {
         public SuscripcionRepository(IContext context) : base(context, "Suscripciones") { }
 
+        public override Guid Add(Suscripcion entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public override async Task<Guid> AddAsync(Suscripcion entity, CancellationToken ct = default)
         {
             const string sql = @"
@@ -196,6 +201,26 @@ namespace LaNacion.Core.Templates.SqsRdr.Repositories.SQL
 
             await _context.Connection.ExecuteAsync(sql, entity, Transaction);
             return entity.Id;
+        }
+
+        public override void Delete(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task DeleteAsync(Guid id, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(Suscripcion entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task UpdateAsync(Suscripcion entity, CancellationToken ct = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }
