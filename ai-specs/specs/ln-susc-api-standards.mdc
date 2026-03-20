@@ -190,6 +190,8 @@ Repository interfaces define data access contracts.
 
 ```csharp
 // Domain layer - Interface
+using LaNacion.Core.Infraestructure.Data;
+
 public interface ISuscripcionRepository : IRepository<Suscripcion, Guid>
 {
     Task<Suscripcion> GetByClienteIdAsync(string clienteId);
@@ -687,7 +689,8 @@ public class CreateSuscripcionHandlerTests
 
 ### Test Coverage Requirements
 
-- Minimum 80% code coverage
+- **Minimum 80% code coverage** (Mandatory)
+- **HU Cleanup**: Mandatory final step to eliminate any code, configuration, or boilerplate not directly related to the current User Story.
 - Test all happy paths
 - Test all error scenarios
 - Test validation rules
@@ -782,6 +785,13 @@ dotnet build                    # Build solution
 dotnet test                     # Run tests
 dotnet run --project Api        # Run API locally
 ```
+
+### HU Cleanup (Mandatory)
+
+After completing the implementation, building tests, and ensuring full compilation, perform a final audit to detect and eliminate any code, configuration, or boilerplate not directly related to the Current User Story (HU).
+- Remove unused template endpoints, commands, or repositories.
+- Remove unrelated shared boilerplate not needed for the specific business logic.
+- Clean up `global usings` and configurations that are not required.
 
 ---
 

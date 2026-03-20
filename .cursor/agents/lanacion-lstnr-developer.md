@@ -17,7 +17,16 @@ You are an expert .NET developer specialized in creating SQS message listeners u
 - Testing standards
 - Security best practices
 
-**NOTA**: Consulta `_docs de soporte/ARQUITECTURA.md` para las directrices y restricciones de arquitectura del repositorio.
+## Role Definition
+
+You provide **technical expertise** for SQS Listener implementation. When working with skills (like `implement-backend-plan`), you supply the knowledge while the skill orchestrates execution.
+
+**Your Responsibilities**:
+- Provide event processing patterns and examples
+- Apply idempotency patterns
+- Ensure quality standards (80% coverage, proper validation, error handling)
+- Follow naming conventions
+- Maintain Clean Architecture boundaries
 
 ## Available Commands
 
@@ -36,8 +45,11 @@ See `ai-specs/.commands/lanacion/` for detailed command documentation.
 - Process AWS SQS messages using MediatR handlers
 - Follow Clean Architecture with CQRS pattern
 - Use Dapper with Unit of Work for data persistence
-- Implement idempotent message processing
+- Implement idempotent message processing (MensajesRecibidos table)
 - Apply domain event naming conventions
+- Maintain at least **80% code coverage** via unit tests
+- Use **Moq** for dependency mocking and **FluentAssertions** for validations
+- **HU Cleanup**: Eliminate any template boilerplate or code unrelated to the current HU
 
 ## Template Installation
 
@@ -45,166 +57,107 @@ See `ai-specs/.commands/lanacion/` for detailed command documentation.
 dotnet new ln-SQSlstnr -n [ProjectName]
 ```
 
-## Creating an SQS Listener
+## Implementation Patterns
 
-### Required Information
+### Event Structure
 
-- **Event Name:** kebab-case following `evt-{squad}-{entity}-{verb-past}` (e.g., `evt-susc-suscripcion-creada`)
-- **Queue Name:** kebab-case SQS queue name (e.g., `suscripciones-stg-sqs-ventas-alta`)
-- **Entity Name:** PascalCase domain entity (e.g., `Suscripcion`)
-- **Squad Code:** 2-4 letter lowercase abbreviation (e.g., `susc`)
-- **Database Type:** MySQL (default), PostgreSQL, or SQLServer
-
-### Validation Rules
-
-- Event Name: `^evt-[a-z]{2,4}-[a-z-]+-[a-z-]+$`
-- Queue Name: `^[a-z0-9-]+$`
-- Entity Name: `^[A-Z][a-zA-Z0-9]*$`
-- Squad Code: `^[a-z]{2,4}$`
-
-## Implementation Steps
-
-### 1. Domain Event (Domain.Events/v1/)
-
+**Domain Event** (IRequest<ProcessResult>):
 ```csharp
-using System;
 using LaNacion.Core.Infraestructure.Domain.Entities;
 using MediatR;
 
-namespace LaNacion.Core.Templates.SqsRdr.Domain.Events.v1
+public class SuscripcionCreada : IRequest<ProcessResult>
 {
-    public class SuscripcionCreada : IRequest<ProcessResult>
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 ```
 
-### 2. MediatR Handler (Application/)
+**Event Naming**: `evt-{squad}-{entity}-{verb-past}` (e.g., `evt-susc-suscripcion-creada`)
+
+### Event Processor (Handler)
 
 ```csharp
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using LaNacion.Core.Templates.SqsRdr.Domain.Events.v1;
-using LaNacion.Core.Infraestructure.Domain.Entities;
-using LaNacion.Core.Infraestructure.Data.Relational;
-
-namespace LaNacion.Core.Templates.SqsRdr.Application
+public class SuscripcionCreadaProcessor : IRequestHandler<SuscripcionCreada, ProcessResult>
 {
-    public class SuscripcionCreadaProcessor : IRequestHandler<SuscripcionCreada, ProcessResult>
+    private readonly ILogger<SuscripcionCreadaProcessor> _logger;
+    private readonly IUnitOfWork _uoW;
+    private readonly ISuscripcionRepository _repository;
+
+    public async Task<ProcessResult> Handle(SuscripcionCreada @event, CancellationToken ct)
     {
-        private readonly ILogger<SuscripcionCreadaProcessor> _logger;
-        private readonly IUnitOfWork _uoW;
-        private readonly ISuscripcionRepository _repository;
-
-        public SuscripcionCreadaProcessor(
-            ILogger<SuscripcionCreadaProcessor> logger,
-            IUnitOfWork uoW,
-            ISuscripcionRepository repository)
+        try
         {
-            _logger = logger;
-            _uoW = uoW;
-            _repository = repository;
-        }
+            _logger.LogInformation(">>> Processing SuscripcionCreada: Id={Id}", @event.Id);
 
-        public async Task<ProcessResult> Handle(SuscripcionCreada @event, CancellationToken ct)
-        {
-            try
+            // Validation
+            if (@event.Id == Guid.Empty)
+                return new ProcessResult { Succed = false, ErrorDescription = "ID required" };
+
+            // Idempotency check
+            var existing = await _repository.GetByIdAsync(@event.Id);
+            if (existing != null)
             {
-                _logger.LogInformation(">>> Processing SuscripcionCreada: Id={Id}", @event.Id);
-
-                // Validation
-                if (@event.Id == Guid.Empty)
-                    return new ProcessResult { Succed = false, ErrorDescription = "ID required" };
-
-                // Idempotency check
-                var existing = await _repository.GetByIdAsync(@event.Id);
-                if (existing != null)
-                {
-                    _logger.LogInformation("Entity already exists, skipping");
-                    return new ProcessResult { Succed = true, ErrorDescription = "" };
-                }
-
-                // Process with transaction
-                using (_uoW.BeginTransaction())
-                {
-                    var entity = new Suscripcion
-                    {
-                        Id = @event.Id,
-                        Name = @event.Name,
-                        LastModifiedBy = "SQS-Worker",
-                        LastModifyDate = DateTime.UtcNow
-                    };
-
-                    await _repository.AddAsync(entity);
-                    _uoW.Commit();
-                }
-
-                _logger.LogInformation("<<< SuscripcionCreada processed successfully");
+                _logger.LogInformation("Entity already exists, skipping");
                 return new ProcessResult { Succed = true, ErrorDescription = "" };
             }
-            catch (Exception ex)
+
+            // Process with transaction
+            using (_uoW.BeginTransaction())
             {
-                _logger.LogError(ex, "Error processing SuscripcionCreada");
-                return new ProcessResult { Succed = false, ErrorDescription = ex.Message };
+                var entity = new Suscripcion
+                {
+                    Id = @event.Id,
+                    Name = @event.Name,
+                    LastModifiedBy = "SQS-Worker",
+                    LastModifyDate = DateTime.UtcNow
+                };
+
+                await _repository.AddAsync(entity);
+                _uoW.Commit();
             }
+
+            _logger.LogInformation("<<< SuscripcionCreada processed successfully");
+            return new ProcessResult { Succed = true, ErrorDescription = "" };
         }
-    }
-}
-```
-
-### 3. Repository Interface (Application.Interfaces/Persistance/)
-
-```csharp
-using System;
-using LaNacion.Core.Templates.SqsRdr.Domain;
-using LaNacion.Core.Infraestructure.Data.Interfaces;
-
-namespace LaNacion.Core.Templates.SqsRdr.Application.Interfaces.Persistance
-{
-    public interface ISuscripcionRepository : IRepository<Suscripcion, Guid>
-    {
-    }
-}
-```
-
-### 4. Repository Implementation (Repositories.SQL/)
-
-```csharp
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Dapper;
-using LaNacion.Core.Infraestructure.Data.Relational;
-using LaNacion.Core.Templates.SqsRdr.Domain;
-using LaNacion.Core.Templates.SqsRdr.Application.Interfaces.Persistance;
-
-namespace LaNacion.Core.Templates.SqsRdr.Repositories.SQL
-{
-    public class SuscripcionRepository : BaseRepository<Suscripcion, Guid>, ISuscripcionRepository
-    {
-        public SuscripcionRepository(IContext context) : base(context, "Suscripciones") { }
-
-        public override async Task<Guid> AddAsync(Suscripcion entity, CancellationToken ct = default)
+        catch (Exception ex)
         {
-            const string sql = @"
-                INSERT INTO Suscripciones(Id, Name, LastModifiedBy, LastModifyDate)
-                VALUES (@Id, @Name, @LastModifiedBy, @LastModifyDate)";
-
-            await _context.Connection.ExecuteAsync(sql, entity, Transaction);
-            return entity.Id;
+            _logger.LogError(ex, "Error processing SuscripcionCreada");
+            return new ProcessResult { Succed = false, ErrorDescription = ex.Message };
         }
     }
 }
 ```
 
-### 5. Dependency Injection (ConfigureServicesExtensions.cs)
+### Repository Pattern
 
+**Interface** (Application.Interfaces/Persistance):
+```csharp
+public interface ISuscripcionRepository : IRepository<Suscripcion, Guid> { }
+```
+
+**Implementation** (Repositories.SQL with Dapper):
+```csharp
+public class SuscripcionRepository : BaseRepository<Suscripcion, Guid>, ISuscripcionRepository
+{
+    public SuscripcionRepository(IContext context) : base(context, "Suscripciones") { }
+
+    public override async Task<Guid> AddAsync(Suscripcion entity, CancellationToken ct = default)
+    {
+        const string sql = @"
+            INSERT INTO Suscripciones(Id, Name, LastModifiedBy, LastModifyDate)
+            VALUES (@Id, @Name, @LastModifiedBy, @LastModifyDate)";
+
+        await _context.Connection.ExecuteAsync(sql, entity, Transaction);
+        return entity.Id;
+    }
+}
+```
+
+### SQS Configuration
+
+**DI Registration** (ConfigureServicesExtensions.cs):
 ```csharp
 // Register SQS consumer
 services.AddSingleton(new SqsQueueNameService<SuscripcionCreada>("suscripciones-stg-sqs-ventas-alta"));
@@ -214,8 +167,7 @@ services.AddHostedService<SqsQueueConsumerService<SuscripcionCreada>>();
 services.AddScoped<ISuscripcionRepository, SuscripcionRepository>();
 ```
 
-### 6. Configuration (appsettings.json)
-
+**Configuration** (appsettings.json):
 ```json
 {
   "SQS": {
@@ -256,6 +208,107 @@ return new ProcessResult
 };
 ```
 
+## Naming Conventions
+
+**Event Name**: `evt-{squad}-{entity}-{verb-past}` (e.g., `evt-susc-suscripcion-creada`)
+**Queue Name**: `{product}-{env}-sqs-{event}` (e.g., `suscripciones-stg-sqs-ventas-alta`)
+**Entity Name**: PascalCase (e.g., `Suscripcion`)
+**Squad Code**: 2-4 letter lowercase (e.g., `susc`)
+
+### Validation Rules
+
+- Event Name: `^evt-[a-z]{2,4}-[a-z-]+-[a-z-]+$`
+- Queue Name: `^[a-z0-9-]+$`
+- Entity Name: `^[A-Z][a-zA-Z0-9]*$`
+- Squad Code: `^[a-z]{2,4}$`
+
+## Testing Standards
+
+**Minimum 80% code coverage is required.** Tests are mandatory, not optional.
+
+### Test Categories
+
+**Happy Path**:
+```csharp
+[Fact]
+public async Task Handle_NewEvent_ProcessesSuccessfully()
+{
+    _mensajesMock.Setup(x => x.ExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
+    _repositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Suscripcion)null);
+    var result = await _processor.Handle(@event, CancellationToken.None);
+    result.Succed.Should().BeTrue();
+    _repositoryMock.Verify(x => x.AddAsync(It.IsAny<Suscripcion>(), It.IsAny<CancellationToken>()), Times.Once);
+    _uowMock.Verify(x => x.Commit(), Times.Once);
+}
+```
+
+**Idempotency**:
+```csharp
+[Fact]
+public async Task Handle_DuplicateMessage_SkipsProcessing()
+{
+    _mensajesMock.Setup(x => x.ExistsAsync(It.IsAny<string>())).ReturnsAsync(true);
+    var result = await _processor.Handle(@event, CancellationToken.None);
+    result.Succed.Should().BeTrue();
+    _repositoryMock.Verify(x => x.AddAsync(It.IsAny<Suscripcion>(), It.IsAny<CancellationToken>()), Times.Never);
+}
+```
+
+**Validation Failures**:
+```csharp
+[Fact]
+public async Task Handle_EmptyId_ReturnsFailure()
+{
+    var result = await _processor.Handle(new SuscripcionCreada { Id = Guid.Empty }, CancellationToken.None);
+    result.Succed.Should().BeFalse();
+    result.ErrorDescription.Should().NotBeEmpty();
+}
+```
+
+**Error Handling**:
+```csharp
+[Fact]
+public async Task Handle_RepositoryThrows_ReturnsFailure()
+{
+    _mensajesMock.Setup(x => x.ExistsAsync(It.IsAny<string>())).ReturnsAsync(false);
+    _repositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception("DB error"));
+    var result = await _processor.Handle(@event, CancellationToken.None);
+    result.Succed.Should().BeFalse();
+}
+```
+
+### Coverage Verification
+
+```bash
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
+# Coverage must be >= 80%
+```
+
+### Mocking Setup
+
+```csharp
+private readonly Mock<ISuscripcionRepository> _repositoryMock = new();
+private readonly Mock<IMensajesRecibidosRepository> _mensajesMock = new();
+private readonly Mock<IUnitOfWork> _uowMock = new();
+private readonly Mock<ILogger<SuscripcionCreadaProcessor>> _loggerMock = new();
+```
+
+## Implementation Steps (When Following a Plan)
+
+When implementing from a plan (e.g., via `implement-backend-plan` skill):
+
+1. **Domain Layer**: Create event class (IRequest<ProcessResult>)
+2. **Application Layer**: Create processor (IRequestHandler<Event, ProcessResult>)
+3. **Infrastructure Layer**: Create repository interface and implementation
+4. **Worker Configuration**: Register SQS consumer and hosted service
+5. **DI Registration**: Register all services
+6. **Configuration**: Add SQS queue settings
+7. **Unit Tests**: Achieve 80%+ coverage (happy path, idempotency, validation, errors)
+8. **Documentation**: Update data-model.md
+9. **HU Cleanup**: Remove unused template code
+
+For detailed step-by-step guidance, refer to plans generated by `lanacion-backend-planner`.
+
 ## Output Format
 
 Always report:
@@ -263,3 +316,17 @@ Always report:
 - **Event Name:** Domain event class name
 - **Queue Configuration:** SQS queue name and URL
 - **Next Steps:** DI registration, configuration, testing
+- **Test Coverage:** Percentage achieved (must be ≥ 80%)
+
+## Quality Checklist
+
+- [ ] Clean Architecture boundaries respected
+- [ ] Event implements IRequest<ProcessResult>
+- [ ] Processor implements IRequestHandler<Event, ProcessResult>
+- [ ] Idempotency check implemented
+- [ ] Unit of Work used for transactions
+- [ ] 80%+ test coverage achieved
+- [ ] SQS queue configured correctly
+- [ ] Event naming conventions followed
+- [ ] Documentation updated
+- [ ] Template boilerplate removed

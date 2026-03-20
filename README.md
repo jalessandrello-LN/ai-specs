@@ -72,9 +72,20 @@ Your AI copilot will automatically load:
 
 All paths and rules are configured to work seamlessly without manual adjustments.
 
-## 💡 Usage: Command-Based Development Workflow
+## 💡 Usage: Autonomous Development Workflow
 
-The most efficient way to work with this setup is using a command-based workflow:
+The most efficient way to work with this setup is using an autonomous workflow with **AI Skills**:
+
+### What are Skills?
+
+Skills are advanced AI capabilities that enable **autonomous, multi-step implementation** with:
+- ✅ **Automatic execution** of all implementation steps
+- ✅ **Continuous validation** (compilation, tests, coverage)
+- ✅ **Intelligent pausing** on errors or ambiguity
+- ✅ **State management** (tracks progress: "Step 5/11 complete")
+- ✅ **Automatic documentation** updates
+
+### Workflow Overview
 
 ### Step 1: Enrich the User Story (Optional)
 
@@ -108,21 +119,36 @@ plan-frontend-ticket SCRUM-15
 
 This creates a comprehensive, step-by-step implementation plan in `ai-specs/changes/`.
 
-### Step 3: Implement the Feature
+### Step 3: Implement the Feature (AUTONOMOUS)
 
-Reference the generated plan and execute:
+Use **AI Skills** for autonomous implementation:
 
 ```
-develop-backend @SCRUM-10_backend.md
+implement-backend-plan @SCRUM-10_backend.md
 ```
 
 or
 
 ```
-develop-frontend @SCRUM-15_frontend.md
+implement-frontend-plan @SCRUM-15_frontend.md
 ```
 
-The AI will follow the plan precisely, implementing each step with TDD, proper testing, and documentation updates.
+**The AI will autonomously**:
+1. Read and parse the complete plan
+2. Auto-select the appropriate agent (API or Listener for backend)
+3. Create the feature branch
+4. **Implement ALL steps in a loop** (Domain → Application → Infrastructure → Presentation)
+5. Verify compilation after each step
+6. Run tests and validate 80%+ coverage
+7. Update technical documentation automatically
+8. Show completion status
+9. Optionally commit and push
+
+**Pauses intelligently** if:
+- Compilation errors occur
+- Tests fail or coverage is below 80%
+- Requirements are unclear
+- Any blocker is encountered
 
 ### Example: Implementing SCRUM-10 (Position Update Feature)
 
@@ -152,23 +178,31 @@ The AI will follow the plan precisely, implementing each step with TDD, proper t
   - Validation rules
   - Error handling strategies
 
-#### Step 3: Implement Following the Plan
+#### Step 3: Implement Following the Plan (AUTONOMOUS)
 
 **You say:**
 ```
-/develop-backend @SCRUM-10_backend.md
+implement-backend-plan @SCRUM-10_backend.md
 ```
 
-**AI executes:**
-1. Creates feature branch `feature/SCRUM-10-backend`
-2. Implements validation function with comprehensive rules
-3. Implements service layer with business logic
-4. Implements controller with HTTP handling
-5. Adds route configuration
-6. Writes 90%+ test coverage across all layers
-7. Updates API documentation
-8. Runs tests and verifies implementation
-9. Commits and pushes (configurable to wait until confirmation)
+**AI executes autonomously:**
+1. Reads plan and detects backend type (Listener)
+2. Adopts role: `lanacion-lstnr-developer`
+3. Creates feature branch `feature/SCRUM-10-listener`
+4. **Implements all steps in loop:**
+   - Step 1/11: Domain Event ✓
+   - Step 2/11: MediatR Handler ✓
+   - Step 3/11: Repository Interface ✓
+   - Step 4/11: Repository Implementation ✓
+   - Step 5/11: Worker Configuration ✓
+   - Step 6/11: Dependency Injection ✓
+   - Step 7/11: Configuration ✓
+   - Step 8/11: Unit Tests ✓
+5. Verifies compilation: `dotnet build` ✓
+6. Runs tests: `dotnet test` (Coverage: 87%) ✓
+7. Updates documentation: `data-model.md` ✓
+8. Shows completion status
+9. Optionally commits and pushes
 
 ### 📝 Demo Enriched User Story
 
@@ -212,7 +246,7 @@ All development follows principles defined in `ai-specs/specs/base-standards.mdc
 3. **Type Safety**: Fully typed code (TypeScript)
 4. **Clear Naming**: Descriptive variables and functions
 5. **English Only**: All code, comments, documentation, and messages in English
-6. **90%+ Test Coverage**: Comprehensive testing across all layers
+6. **80%+ Test Coverage**: Comprehensive testing across all layers (enforced by skills)
 7. **Incremental Changes**: Focused, reviewable modifications
 
 ### Specific Standards
@@ -242,10 +276,11 @@ All development follows principles defined in `ai-specs/specs/base-standards.mdc
 
 ### For Developers
 - ✅ **Consistent Code Quality**: AI follows the same standards every time
-- ✅ **Comprehensive Testing**: Automatic 90%+ coverage across all layers
+- ✅ **Comprehensive Testing**: Automatic 80%+ coverage across all layers
 - ✅ **Complete Documentation**: API specs updated automatically
 - ✅ **Faster Onboarding**: New team members reference the same rules
 - ✅ **Reduced Review Time**: Code follows established patterns
+- ✅ **Autonomous Implementation**: Skills implement entire features without manual intervention
 
 ### For Teams
 - ✅ **Copilot Flexibility**: Team members can use their preferred AI tool
@@ -282,6 +317,40 @@ All development follows principles defined in `ai-specs/specs/base-standards.mdc
 - **Version Control**: Track changes to standards like code
 - **Team Review**: Standards changes should be reviewed like pull requests
 - **Documentation**: Keep examples current with actual implementation
+
+## 🤖 AI Skills (NEW)
+
+This repository includes **autonomous AI skills** that enable multi-step implementation without manual intervention:
+
+### Available Skills
+
+1. **`implement-backend-plan`** - Autonomous backend implementation
+   - Supports REST APIs and SQS Listeners
+   - Auto-selects appropriate agent (API or Listener developer)
+   - Implements all steps in loop with validation
+   - Runs tests and validates 80%+ coverage
+   - Updates documentation automatically
+
+2. **`implement-frontend-plan`** - Autonomous frontend implementation
+   - Supports React with TypeScript
+   - Implements components with state management
+   - Runs tests and validates 80%+ coverage
+   - Validates accessibility (WCAG)
+   - Updates documentation automatically
+
+### Skills vs Commands
+
+| Aspect | Commands | Skills |
+|--------|----------|--------|
+| **Execution** | Manual, step-by-step | Autonomous, multi-step |
+| **State** | Stateless | Maintains progress |
+| **Validation** | Manual | Automatic at each step |
+| **Testing** | Manual | Automatic with coverage |
+| **Documentation** | Manual | Automatic updates |
+
+For more details, see `ai-specs/.skills/README.md`
+
+---
 
 ## 📚 Technical context
 

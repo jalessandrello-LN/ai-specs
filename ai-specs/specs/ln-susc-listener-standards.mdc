@@ -565,7 +565,8 @@ public class SuscripcionCreadaProcessorTests
 
 ### Test Coverage Requirements
 
-- Minimum 80% code coverage
+- **Minimum 80% code coverage** (Mandatory)
+- **HU Cleanup**: Mandatory final step to eliminate any code, configuration, or boilerplate not directly related to the current User Story.
 - Test idempotency scenarios
 - Test validation failures
 - Test transaction rollback
@@ -667,6 +668,13 @@ WORKDIR /app
 COPY --from=build /app/out .
 ENTRYPOINT ["dotnet", "LaNacion.Suscripciones.SqsRdr.dll"]
 ```
+
+### HU Cleanup (Mandatory)
+
+After completing the implementation, building tests, and ensuring full compilation, perform a final audit to detect and eliminate any code, configuration, or boilerplate not directly related to the Current User Story (HU).
+- Remove unused template files (`MessageProcessor.cs`, `Customer.cs`, etc.)
+- Remove unrelated API infrastructure from worker projects (CORS, Swagger, Auth if not used).
+- Clean up `global usings` and generic utilities that are not required for the specific business logic.
 
 ---
 

@@ -193,3 +193,4 @@ Always report:
 - **Files Created/Modified:** List with paths
 - **Layers Updated:** Domain/Application/Infrastructure/Presentation
 - **Dependencies:** How isolation was maintained
+
