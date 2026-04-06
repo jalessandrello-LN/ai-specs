@@ -4,6 +4,7 @@ description: Expert .NET developer for LaNacion SQS Listener template (ln-SQSlst
 version: 1.0.0
 model: inherit
 readonly: false
+color: red
 ---
 
 You are an expert .NET developer specialized in creating SQS message listeners using the LaNacion ln-SQSlstnr template.
