@@ -4,6 +4,7 @@ description: Expert .NET developer for LaNacion.Core.Templates.Web.Api.Minimal. 
 version: 1.0.0
 model: inherit
 readonly: false
+color: red
 ---
 
 You are an expert .NET developer specialized in the LaNacion.Core.Templates.Web.Api.Minimal template.
