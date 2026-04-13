@@ -1,0 +1,24 @@
+{
+  "generators": {
+    "add-template": {
+      "factory": "./src/generators/add-template/generator",
+      "schema": "./src/generators/add-template/schema.json",
+      "description": "tools/ln-generators/src/generators/add-template generator"
+    },
+    "remove-template": {
+      "factory": "./src/generators/remove-template/generator",
+      "schema": "./src/generators/remove-template/schema.json",
+      "description": "tools/ln-generators/src/generators/remove-template generator"
+    },
+    "add-lib": {
+      "factory": "./src/generators/add-lib/generator",
+      "schema": "./src/generators/add-lib/schema.json",
+      "description": "add-lib generator"
+    },
+    "add-lambda": {
+      "factory": "./src/generators/add-lambda/generator",
+      "schema": "./src/generators/add-lambda/schema.json",
+      "description": "tools/ln-generators/src/generators/add-lambda generator"
+    }
+  }
+}

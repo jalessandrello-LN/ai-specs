@@ -8,34 +8,41 @@ It's highly recommended to be used along with Spec-Driven Development frameworks
 
 ```
 .
-├── ai-specs/                    # Main directory with all rules and configurations
-│   ├── specs/                   # Development standards and specifications
-│   │   ├── base-standards.mdc   # Core development rules (single source of truth)
-│   │   ├── ln-susc-api-standards.mdc
-│   │   ├── ln-susc-listener-standards.mdc
-│   │   ├── frontend-standards.mdc
-│   │   ├── documentation-standards.mdc
-│   │   ├── api-spec.yml         # OpenAPI specification
-│   │   ├── data-model.md        # Database and domain models
-│   │   └── development_guide.md
-│   ├── .commands/               # Reusable command prompts
-│   │   ├── lanacion/            # La Nación specific commands (SQS, repositories, etc.)
-│   │   ├── plan-backend-ticket.md
-│   │   ├── develop-backend.md
-│   │   └── ...
-│   ├── .agents/                 # Agent role definitions (backend, frontend, analyst, etc.)
-│   └── changes/                 # Feature implementation plans
-│       └── SCRUM-10_backend.md  # Demo: Position update feature plan
+├── ai-specs/                     # Canonical source (single source of truth)
+│   ├── specs/                    # Standards (rules that agents follow)
+│   ├── .agents/                  # Agent definitions (roles)
+│   ├── .commands/                # Commands (prompts/workflows)
+│   ├── .skills/                  # Skills documentation
+│   └── changes/                  # Generated plans (e.g., SCRUM-10_backend.md)
 │
-├── AGENTS.md                    # Generic agent configuration
-├── CLAUDE.md                    # Claude-specific configuration
-├── codex.md                     # GitHub Copilot/Codex configuration
-└── GEMINI.md                    # Gemini-specific configuration
+├── openspec/                     # OpenSpec workspace (spec-driven development)
+│   ├── config.yaml               # Project context + per-artifact rules
+│   └── changes/                  # OpenSpec change artifacts (and archive)
+│
+├── .agent/                       # Multi-copilot adapter layer (points to `ai-specs/`)
+│   ├── agents/                   # Pointer files → `ai-specs/.agents/*`
+│   ├── commands/                 # Pointer files → `ai-specs/.commands/*`
+│   ├── skills/                   # Skill definitions (includes OpenSpec skills)
+│   ├── specs/                    # Specs exposed to tools
+│   └── workflows/                # OpenSpec workflows (opsx-*)
+│
+├── .claude/ .codex/ .cursor/ ... # Tool-specific mirrors of `.agent/`
+├── .github/                      # GitHub Copilot prompts/specs/skills
+├── links.ps1                     # Helper: sync `.agent/` into tool folders (creates `.agent_backups/`)
+│
+├── AGENTS.md                     # Generic agent configuration
+├── CLAUDE.md                     # Claude-specific configuration
+├── codex.md                      # GitHub Copilot/Codex configuration
+└── GEMINI.md                     # Gemini-specific configuration
 ```
+
+For a complete directory map, see `STRUCTURE-GUIDE.md`.
 
 ## 🤖 Multi-Copilot Support
 
-This repository uses **symbolic links** or **naming conventions** to support multiple AI coding copilots without duplication:
+This repository avoids duplication by keeping the canonical content under `ai-specs/` and exposing it through a lightweight adapter layer (`.agent/` + tool folders like `.claude/`, `.codex/`, `.cursor/`).
+
+In this repo the adapters are plain **pointer files** (not symlinks) that reference `ai-specs/...` paths. Tool folders can be mirrored from `.agent/` using `links.ps1`.
 
 - **`AGENTS.md`** → Generic agent rules (works with most copilots)
 - **`CLAUDE.md`** → Optimized for Claude/Cursor
@@ -108,13 +115,13 @@ This command analyzes the user story and generates:
 Use **`plan-ticket`** commands to generate detailed implementation plans:
 
 ```
-plan-backend-ticket SCRUM-10
+/plan-backend-ticket SCRUM-10
 ```
 
 or
 
 ```
-plan-frontend-ticket SCRUM-15
+/plan-frontend-ticket SCRUM-15
 ```
 
 This creates a comprehensive, step-by-step implementation plan in `ai-specs/changes/`.
@@ -186,21 +193,18 @@ implement-backend-plan @SCRUM-10_backend.md
 ```
 
 **AI executes autonomously:**
-1. Reads plan and detects backend type (Listener)
-2. Adopts role: `lanacion-lstnr-developer`
-3. Creates feature branch `feature/SCRUM-10-listener`
+1. Reads the plan and detects backend type (API or Listener)
+2. Adopts role: `lanacion-api-developer` or `lanacion-lstnr-developer`
+3. Creates the feature branch defined by the plan (e.g., `feature/SCRUM-10-api` or `feature/SCRUM-10-listener`)
 4. **Implements all steps in loop:**
-   - Step 1/11: Domain Event ✓
-   - Step 2/11: MediatR Handler ✓
-   - Step 3/11: Repository Interface ✓
-   - Step 4/11: Repository Implementation ✓
-   - Step 5/11: Worker Configuration ✓
-   - Step 6/11: Dependency Injection ✓
-   - Step 7/11: Configuration ✓
-   - Step 8/11: Unit Tests ✓
-5. Verifies compilation: `dotnet build` ✓
-6. Runs tests: `dotnet test` (Coverage: 87%) ✓
-7. Updates documentation: `data-model.md` ✓
+   - Step 1/N: Domain ✓
+   - Step 2/N: Application ✓
+   - Step 3/N: Infrastructure ✓
+   - Step 4/N: Presentation ✓
+   - Step 5/N: Tests ✓
+5. Verifies compilation (e.g., `dotnet build`) ✓
+6. Runs tests (e.g., `dotnet test`) and validates coverage (≥ 80%) ✓
+7. Updates documentation (e.g., `ai-specs/specs/data-model.md`) ✓
 8. Shows completion status
 9. Optionally commits and pushes
 
@@ -243,9 +247,9 @@ All development follows principles defined in `ai-specs/specs/base-standards.mdc
 
 1. **Small Tasks, One at a Time**: Baby steps, never skip ahead
 2. **Test-Driven Development (TDD)**: Write failing tests first
-3. **Type Safety**: Fully typed code (TypeScript)
+3. **Type Safety**: Prefer strongly typed code and strict compilation settings (e.g., C#, TypeScript)
 4. **Clear Naming**: Descriptive variables and functions
-5. **English Only**: All code, comments, documentation, and messages in English
+5. **Language Standards**: Follow `ai-specs/specs/base-standards.mdc`
 6. **80%+ Test Coverage**: Comprehensive testing across all layers (enforced by skills)
 7. **Incremental Changes**: Focused, reviewable modifications
 
@@ -309,7 +313,7 @@ All development follows principles defined in `ai-specs/specs/base-standards.mdc
 2. **Adapt agents in `ai-specs/.agents`**: Adjust agent definitions to your project's roles and workflows
 3. **Extend Commands**: Define battle-tested prompts into commands in `ai-specs/.commands` 
 4. **Link Resources**: Reference your project's specific documentation or tasks using MCPs
-5. **Keep the symlink structure**: Remember to create relative symlinks from claude and cursor folders to the newly created agents or commands to keep it consistent
+5. **Keep the adapter layer consistent**: Add/update pointer files in `.agent/` and (if needed) run `links.ps1` to mirror them into tool-specific folders
 
 ### Maintaining Standards
 
@@ -375,23 +379,3 @@ When contributing to the standards:
 3. Update examples in `changes/` folder if needed
 4. Document breaking changes clearly
 5. Follow the same standards you're defining!
-
-## 📄 License
-
-Copyright (c) 2025 LIDR.co
-Licensed under the MIT License
-
-**English:**
-
-The content of this repository is part of the AI4Devs program by LIDR.co. If you want to learn to code with AI like the pros and get more templates and resources like these, you can find all the information on the official website: https://lidr.co/ia-devs
-
-**Español:**
-
-El contenido de este repositorio es parte del programa AI4Devs de LIDR.co. Si quieres aprender a programar con IA como los pros, y obtener más plantillas y recursos como estos, puedes encontrar toda la información en la página oficial: https://lidr.co/ia-devs
-
----
-
-**Made with 🤖 by the LIDR community**
-
-For questions, issues, or suggestions, visit [LIDR.co](https://lidr.co/ia-devs)
-

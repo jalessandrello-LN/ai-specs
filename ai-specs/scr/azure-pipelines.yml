@@ -1,0 +1,54 @@
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: Arquitectura/PipelineTemplates
+      ref: refs/tags/2.14.0
+
+trigger:
+  - main
+  - qa
+  - qa/*
+  - develop
+  - dev/*
+  - dp/*
+
+variables:
+  - template: templates/nxVars.yml@templates
+
+pool:
+  name: CI-AgentsLinux
+
+jobs:
+  - job: BuildAndTest
+    steps:
+      - script: |
+          #!/bin/bash
+
+          # Set the "CONFIGURATION" environment variable based on the branch name
+          if [ $(Build.SourceBranchName) == "main" ]; then
+            echo "##vso[task.setvariable variable=CONFIGURATION]production"
+            echo "production"
+          elif [[ $(Build.SourceBranch) =~ ^'refs/heads/dev'* ]]; then
+            echo "##vso[task.setvariable variable=CONFIGURATION]dev"
+            echo "##vso[task.setvariable variable=BUILD_ALL]true"
+            echo "dev"
+          elif [[ $(Build.SourceBranch) =~ ^'refs/heads/qa'* ]]; then
+            echo "##vso[task.setvariable variable=CONFIGURATION]qa"
+            echo "##vso[task.setvariable variable=BUILD_ALL]true"
+            echo "qa"
+          else
+            echo "##vso[task.setvariable variable=CONFIGURATION]dev"
+            echo "##vso[task.setvariable variable=BUILD_ALL]true"
+            echo "other, setea dev"
+          fi
+
+      - template: templates/monorepoNx.yml@templates
+        parameters:
+          nodeVersion: 20.x
+          projectKeySonarQube: 'LaNacion.DataQuality'
+          runTest: true
+          tsconfigPath: tsconfig.base.json
+          runTestCommand: run test:ci
+          npmInstallDependencies: ''
+          buildScript: npm run build:ci

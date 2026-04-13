@@ -1,0 +1,147 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "📦 Compilar Lambda (build:lambda)",
+            "type": "shell",
+            "command": "npm run build:lambda",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "🧱 Generar Librería .Net",
+            "type": "shell",
+            "command": "npm run generate:lib",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "📦 Generar Template de Listener/Minimal API",
+            "type": "shell",
+            "command": "npm run generate:template",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "🧠 Generar Lambda .Net",
+            "type": "shell",
+            "command": "npm run generate:lambda",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "🗑️ Borrar Template de Listener/Api",
+            "type": "shell",
+            "command": "npm run delete:template",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "⚙️ Build Completo del Proyecto",
+            "type": "shell",
+            "command": "dotnet build",
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "🐳 Iniciar Docker: LocalStack + MySQL",
+            "type": "shell",
+            "command": "./scripts/initDocker.sh",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🛠️ Crear Esquema MySQL",
+            "type": "shell",
+            "command": "./scripts/mysqlCreator.sh",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "📬 Crear Cola SQS",
+            "type": "shell",
+            "command": "./scripts/sqsCreator.sh",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🧹 Purgar Cola SQS",
+            "type": "shell",
+            "command": "./scripts/sqsPurgeData.sh",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "➕ Añadir Mensajes a la Cola SQS",
+            "type": "shell",
+            "command": "./scripts/sqsAddData.sh",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔄 Crear / Actualizar Step Function",
+            "type": "shell",
+            "command": "./scripts/create-step-function.sh",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔍 Ver Ejecuciones de Step Function",
+            "type": "shell",
+            "command": "./scripts/inspect-executions.sh",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

@@ -78,6 +78,70 @@ implement-frontend-plan @SCRUM-501_frontend.md
 
 ---
 
+### 3. `scaffold-monorepo-backend-app`
+
+**Purpose**: Scaffold a new backend app inside the Nx + .NET monorepo using the corporate app generator.
+
+**Usage**:
+```
+scaffold-monorepo-backend-app
+```
+
+**What it does**:
+1. Confirms whether the request is for an API or a listener
+2. Uses the `add-template` generator flow
+3. Verifies output under `apps/`
+4. Verifies `.sln`, `project.json`, tests, Docker, `cdk/`, and VS Code integration
+5. Applies the right backend standards after generation
+
+**Supports**:
+- Minimal APIs
+- SQS listeners
+- Monorepo-native app scaffolding
+
+---
+
+### 4. `scaffold-monorepo-lambda`
+
+**Purpose**: Scaffold a new .NET 8 Lambda in the monorepo using the Lambda generator flow.
+
+**Usage**:
+```
+scaffold-monorepo-lambda
+```
+
+**What it does**:
+1. Validates Lambda naming and stack choice
+2. Uses the `add-lambda` generator flow
+3. Verifies app, tests, local runner, and CDK outputs
+4. Checks `.sln` integration
+5. Reviews known generator caveats before considering the scaffold complete
+
+**Supports**:
+- New Lambda stacks
+- Lambdas added to existing stacks
+- .NET 8 Lambda projects with local runner and CDK
+
+---
+
+### 5. `validate-monorepo-integration`
+
+**Purpose**: Validate that a generated or modified monorepo artifact is correctly integrated into the workspace.
+
+**Usage**:
+```
+validate-monorepo-integration
+```
+
+**What it does**:
+1. Verifies placement under `apps/` or `libs/`
+2. Checks `.sln` registration
+3. Checks `project.json`, tests, and `cdk/`
+4. Runs targeted build/test/synth validation
+5. Reports hard failures and soft caveats separately
+
+---
+
 ## Skills vs Commands
 
 | Aspect | Commands | Skills |
@@ -126,6 +190,7 @@ Tests Passed + Docs Updated
 4. **Resilience**: Pauses on errors instead of failing silently
 5. **Transparency**: Shows progress and status continuously
 6. **Documentation**: Updates docs automatically before completion
+7. **Scaffolding Reuse**: Shared monorepo scaffolding logic can live in reusable skills
 
 ## Skill Execution Flow
 

@@ -41,15 +41,19 @@ You provide **technical expertise** for REST API implementation. When working wi
 
 ## Template Installation
 
-**Standard API:**
+For new APIs inside the monorepo, do **not** scaffold with direct `dotnet new` commands.
+
+Use the monorepo generator flow:
 ```bash
-dotnet new ln-minWebApi -n [ProjectName]
+npm run generate:template
 ```
 
-**API with WCF Integration:**
-```bash
-dotnet new ln-minWebApi-WCF -n [ProjectName]
-```
+During the interactive flow:
+- Choose the **Minimal API** path for a standard API
+- Choose the **WCF-enabled API** variant when legacy SOAP/WCF integration is required
+- Let the generator register the app under `apps/` and update `.sln`, `project.json`, `tests/`, and `cdk/`
+
+If the request is primarily scaffolding or workspace integration, route first through `lanacion-nx-monorepo-developer` and the `scaffold-monorepo-backend-app` skill, then continue business implementation with this agent.
 
 ## Implementation Patterns
 
