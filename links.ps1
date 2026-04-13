@@ -30,11 +30,22 @@ foreach($t in $targets){
   }
 }
 
+# --- Post-mirror: convert .gemini/agents from .md to .toml pointer format
+$geminiAgents = 'D:\template\ai-specs\.gemini\agents'
+Write-Output "\nConverting .gemini/agents .md files to .toml pointer format"
+Get-ChildItem -Path $geminiAgents -Filter '*.md' | ForEach-Object {
+  $agentName = $_.BaseName
+  $tomlPath  = Join-Path $geminiAgents "$agentName.toml"
+  $tomlContent = "description = `"../../.agent/agents/$agentName.md`"`r`n`r`nprompt = `"""`r`n../../.agent/agents/$agentName.md`r`n`"""`r`n"
+  Set-Content -Path $tomlPath -Value $tomlContent -Encoding UTF8
+  Remove-Item -Path $_.FullName
+  Write-Output " Converted: $agentName.md -> $agentName.toml"
+}
+
 Write-Output "\nVerification:"
 foreach($t in $targets){
   $destAgents = Join-Path (Join-Path 'D:\template\ai-specs' $t) 'agents'
   if(Test-Path $destAgents){
-    $it = Get-Item $destAgents -Force
     Write-Output "$destAgents : Exists=True"
     Write-Output "Contents:"
     Get-ChildItem -Path $destAgents | ForEach-Object { Write-Output " - $($_.Name)" }

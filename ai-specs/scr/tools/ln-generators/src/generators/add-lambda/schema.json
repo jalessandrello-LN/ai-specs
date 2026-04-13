@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "AddLambda",
+  "title": "Generador de Lambda",
+  "type": "object",
+  "properties": {
+    "cdkOption": {
+      "type": "number",
+      "description": "Opción de stack de CDK",
+      "enum": [1, 2],
+      "x-prompt": "¿Querés usar un CDK existente o crear uno nuevo? (1= Stack existente 2= Crear uno nuevo)"
+    },
+    "cdkName": {
+      "type": "string",
+      "description": "Nombre del nuevo stack",
+      "x-prompt": "¿Cuál es el nombre del stack de CDK?",
+      "x-if": "cdkOption === 2"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nombre de la funcion lambda. Debe terminar con .lambda",
+      "pattern": ".*\\.[Ll]ambda$",
+      "x-prompt": "¿Cuál es el nombre de la funcion lambda? (debe terminar en .lambda)"
+    },
+    "memorySize": {
+      "type": "number",
+      "description": "Tamaño de memoria en MB",
+      "default": 256,
+      "x-prompt": "¿Cuánta memoria necesita la lambda? (en MB)"
+    }
+  },
+  "required": ["name", "memorySize", "cdkOption", "cdkName"]
+}

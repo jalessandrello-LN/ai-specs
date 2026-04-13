@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "AddTemplate",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del proyecto",
+      "x-prompt": "¿Cómo se llamará el nuevo proyecto?"
+    },
+    "templateType": {
+      "type": "number",
+      "description": "Tipo de proyecto a generar",
+      "enum": [1, 2],
+      "x-prompt": "¿Qué tipo de proyecto querés crear? (1 = Listener, 2 = Minimal API)"
+    },
+    "httpPort": {
+      "type": "number",
+      "description": "Puerto HTTP para el proyecto",
+      "x-prompt": "¿Qué puerto HTTP querés usar para el proyecto?"
+    },
+    "httpsPort": {
+      "type": "number",
+      "description": "Puerto HTTPS para el proyecto",
+      "x-prompt": "¿Qué puerto HTTPS querés usar para el proyecto?"
+    }
+  },
+  "required": ["name", "templateType", "httpPort", "httpsPort"]
+}

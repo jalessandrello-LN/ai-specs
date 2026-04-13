@@ -71,6 +71,22 @@ All agents follow the base development standards defined in:
 - `/plan-frontend-ticket [TICKET-ID]`
 - `/develop-frontend @[TICKET-ID]_frontend.md`
 
+### 6. Nx Monorepo Developer
+**File**: `ai-specs/.agents/lanacion-nx-monorepo-developer.md`  
+**Purpose**: Creates and integrates new monorepo projects for Minimal APIs, SQS listeners, and Lambdas using the Nx + .NET template  
+**Technology**: Nx, .NET 6/8, AWS CDK, Docker, Azure Artifacts  
+**Architecture**: Hybrid monorepo (Nx orchestration + .NET build + co-located CDK)  
+**References**:
+- `ai-specs/scr/template-nx-dotnet-desde-cero.md`
+- `ai-specs/scr/arq-monorepo.md`
+- `ai-specs/specs/ln-susc-api-standards.mdc`
+- `ai-specs/specs/ln-susc-listener-standards.mdc`
+
+**When to use**: To scaffold a new API, listener, or Lambda from scratch inside the monorepo and leave it integrated with `.sln`, `project.json`, tests, and `cdk/`  
+**Primary entrypoints**:
+- `npm run generate:template` for APIs and listeners
+- `npm run generate:lambda` for Lambdas
+
 ## Spec-Driven Development Workflow
 
 ### Backend Development Flow
@@ -103,6 +119,17 @@ All agents follow the base development standards defined in:
 │   → Use lanacion-api-developer                              │
 │ • If plan references ln-susc-listener-standards.mdc         │
 │   → Use lanacion-lstnr-developer                            │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Nota: si la tarea requiere scaffolding o integración del   │
+│ workspace (por ejemplo: dar de alta una nueva API, Listener │
+│ o Lambda dentro del monorepo), el flujo debe enrutar       │
+│ primero al agente `lanacion-nx-monorepo-developer`. Ese    │
+│ agente ejecuta el scaffolding/integración (p. ej.          │
+│ `scaffold-monorepo-backend-app`) y usa el generador del    │
+│ monorepo (`npm run generate:template`) como entrypoint     │
+│ para crear e integrar proyectos en la solución monorepo.    │
 └─────────────────────────────────────────────────────────────┘
 ```
 

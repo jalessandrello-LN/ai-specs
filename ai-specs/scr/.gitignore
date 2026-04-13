@@ -1,0 +1,186 @@
+# =========================
+# Node.js / Nx / Yarn / NPM
+# =========================
+node_modules/
+dist/
+build/
+tmp/
+.nx/
+.nx/cache/
+.nx/workspace-data/
+package-lock.json
+yarn.lock
+.pnp.*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Coverage / Reports
+coverage/
+.nyc_output/
+*.lcov
+*.tgz
+*.rpt2_cache/
+*.rts2_cache_*/
+report.[0-9]*.json
+istanbul-report/
+.vscode-test/
+test-results/
+
+# Cache
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.web_modules/
+.eslintcache
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+*.tsbuildinfo
+*.rpt2_cache/
+*.env
+.env.test
+*.bak
+
+# Nx generated bin/obj
+**/bin/
+**/obj/
+
+# =========================
+# .NET / Visual Studio
+# =========================
+# User-specific
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.userprefs
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+artifacts/
+*.dll
+*.exe
+*.cache
+*.pdb
+*.mdb
+*.log
+*.vspscc
+*.vssscc
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+
+# Test results
+TestResult*/
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+*.coverage
+*.coveragexml
+*.trx
+*.svclog
+
+# Misc
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.sdf
+*.VC.db
+*.VC.opendb
+*.tss
+*.tmp
+*.scc
+*.bak
+*.aps
+*.pidb
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.gpState
+*.DotSettings.user
+*.vssscc
+*.psess
+*.ipch
+*.plg
+*.opt
+*.vbw
+*.pfx
+*.publishsettings
+*.docstates
+*.meta
+
+# Rider / ReSharper
+.idea/
+.ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+*.sln.iml
+
+# Local history / temp / crash
+.localhistory/
+mono_crash.*
+*.tmp_proj
+*.tmp
+*_wpftmp.csproj
+
+# Azure / Publish
+publish/
+*.azurePubxml
+*.pubxml
+*.publishproj
+csx/
+*.build.csdef
+ServiceFabricBackup/
+
+# Docker / LocalStack
+.dynamodb/
+Dockerfile.*
+docker-compose.*
+
+# CDN / Caches
+ClientBin/
+.cachefile
+Generated_Code/
+*.db
+.ionide/
+.axoCover/
+.axoCover/settings.json
+
+# Devtools / Plugin artifacts
+.fake/
+.paket/
+_Pvt_Extensions
+*.GhostDoc.xml
+
+# =========================
+# Ignorar generadores de Nx
+# =========================
+tools/ln-generators/dist/
+tools/ln-generators/.output/
+
+!**/cdk/src/bin/
+!**/cdk/src/bin/**
+
+# Entorno de Visual Studio
+.vs/
+*?:Zone.Identifier

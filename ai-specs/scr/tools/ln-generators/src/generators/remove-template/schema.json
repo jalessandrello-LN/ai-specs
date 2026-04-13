@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "RemoveListener",
+  "title": "Remove a Listener",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del listener a eliminar",
+      "x-prompt": "¿Cuál es el nombre del listener que querés eliminar?"
+    }
+  },
+  "required": ["name"]
+}

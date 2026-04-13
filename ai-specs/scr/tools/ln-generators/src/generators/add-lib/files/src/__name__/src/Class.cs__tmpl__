@@ -1,0 +1,6 @@
+namespace <%= className %>;
+
+public static class Class
+{
+    public static string HelloWorld() => "Hola desde <%= name %>";
+}

@@ -1,0 +1,41 @@
+{
+  "name": "ln-generators",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/ln-generators/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build:generator": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/tools/ln-generators",
+        "main": "tools/ln-generators/src/index.ts",
+        "tsConfig": "tools/ln-generators/tsconfig.lib.json",
+        "assets": [
+          "tools/ln-generators/*.md",
+          {
+            "input": "./tools/ln-generators/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/ln-generators/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/ln-generators",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./tools/ln-generators",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    }
+  }
+}

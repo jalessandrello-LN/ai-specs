@@ -54,9 +54,19 @@ See `ai-specs/.commands/lanacion/` for detailed command documentation.
 
 ## Template Installation
 
+For new listeners inside the monorepo, do **not** scaffold with direct `dotnet new` commands.
+
+Use the monorepo generator flow:
 ```bash
-dotnet new ln-SQSlstnr -n [ProjectName]
+npm run generate:template
 ```
+
+During the interactive flow:
+- Choose the **Listener** path
+- Let the generator apply the listener template and integrate the app under `apps/`
+- Verify `.sln`, `project.json`, `tests/`, and `cdk/` after generation
+
+If the request is primarily scaffolding or workspace integration, route first through `lanacion-nx-monorepo-developer` and the `scaffold-monorepo-backend-app` skill, then continue business implementation with this agent.
 
 ## Implementation Patterns
 

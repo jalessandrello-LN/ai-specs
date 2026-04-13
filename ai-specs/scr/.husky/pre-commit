@@ -1,0 +1,13 @@
+# Ejecutar linting en los archivos en etapa (staged)
+echo "Ejecutando linting de archivos en etapa..."
+if ! npm run lint-staged; then
+    echo "Linting ha fallado. Abortando commit."
+    exit 1
+fi
+
+# Tests
+if ! npm test; then
+    echo "Las pruebas han fallado. Abortando commit."
+    exit 1
+fi
+
