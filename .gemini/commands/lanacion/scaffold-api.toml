@@ -1,0 +1,5 @@
+description = "../../ai-specs/.commands/lanacion/scaffold-api.md"
+
+prompt = """
+../../ai-specs/.commands/lanacion/scaffold-api.md
+"""

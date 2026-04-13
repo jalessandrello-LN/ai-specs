@@ -1,0 +1,5 @@
+description = "../../ai-specs/.commands/lanacion/cleanup-template-boilerplate.md"
+
+prompt = """
+../../ai-specs/.commands/lanacion/cleanup-template-boilerplate.md
+"""

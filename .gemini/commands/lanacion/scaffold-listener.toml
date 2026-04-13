@@ -1,0 +1,5 @@
+description = "../../ai-specs/.commands/lanacion/scaffold-listener.md"
+
+prompt = """
+../../ai-specs/.commands/lanacion/scaffold-listener.md
+"""

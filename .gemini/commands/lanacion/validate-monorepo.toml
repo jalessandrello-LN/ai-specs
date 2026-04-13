@@ -1,0 +1,5 @@
+description = "../../ai-specs/.commands/lanacion/validate-monorepo.md"
+
+prompt = """
+../../ai-specs/.commands/lanacion/validate-monorepo.md
+"""
