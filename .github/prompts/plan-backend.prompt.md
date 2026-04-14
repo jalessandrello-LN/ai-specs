@@ -9,7 +9,7 @@ Generate a detailed implementation plan for a backend feature (API or Listener).
 ## Input
 
 Provide:
-- Ticket ID (e.g., SCRUM-500)
+- Ticket ID (e.g., HU-500)
 - Feature description
 - Backend type: API or Listener
 - Acceptance criteria
@@ -133,7 +133,7 @@ Display:
 ## Plan Template for API
 
 ```markdown
-# SCRUM-500: Create Customer API
+# HU-500: Create Customer API
 
 ## Overview
 Create a REST API endpoint to create new customers with validation and event publishing.
@@ -327,13 +327,13 @@ Update `ai-specs/specs/data-model.md`:
 - Coverage: 80%+
 
 ## Next Steps
-Run: `develop-backend-api @SCRUM-500_backend.md`
+Run: `develop-backend-api @HU-500_backend.md`
 ```
 
 ## Plan Template for Listener
 
 ```markdown
-# SCRUM-500: Process Subscription Events
+# HU-500: Process Subscription Events
 
 ## Overview
 Create an SQS listener to process subscription creation events with idempotency.
@@ -479,23 +479,23 @@ Update `ai-specs/specs/data-model.md`:
 - Coverage: 80%+
 
 ## Next Steps
-Run: `develop-backend-listener @SCRUM-500_backend.md`
+Run: `develop-backend-listener @HU-500_backend.md`
 ```
 
 ## Output
 
 Display:
 ```
-## Plan Generated: SCRUM-500
+## Plan Generated: HU-500
 
 **Backend Type**: [API | Listener]
 **Implementation Steps**: N
 **Estimated Effort**: [Low | Medium | High]
 
-**Plan Location**: ai-specs/changes/SCRUM-500_backend.md
+**Plan Location**: ai-specs/changes/HU-500_backend.md
 
 **Next Command**:
-develop-backend-api @SCRUM-500_backend.md
+develop-backend-api @HU-500_backend.md
 # or
-develop-backend-listener @SCRUM-500_backend.md
+develop-backend-listener @HU-500_backend.md
 ```

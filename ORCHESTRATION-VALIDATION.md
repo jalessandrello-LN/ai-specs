@@ -8,7 +8,7 @@ Validar que la arquitectura de orquestación de agentes funciona correctamente y
 
 ## 🎯 Requerimiento 1: API REST - Crear Suscripción
 
-### Ticket: SCRUM-600
+### Ticket: HU-600
 
 **Descripción**: Como usuario del sistema, quiero crear una nueva suscripción mediante un endpoint REST para poder registrar suscripciones en el sistema.
 
@@ -27,7 +27,7 @@ Validar que la arquitectura de orquestación de agentes funciona correctamente y
 
 **Análisis**:
 ```
-1. Leer ticket SCRUM-600
+1. Leer ticket HU-600
 2. Identificar tipo de backend:
    - ✅ Menciona "endpoint REST"
    - ✅ Menciona "POST /api/v1/subscriptions"
@@ -44,10 +44,10 @@ Validar que la arquitectura de orquestación de agentes funciona correctamente y
 - Necesita publicar eventos (no consumirlos)
 - Patrón: Request → Process → Response → Publish Event
 
-**Plan Generado**: `ai-specs/changes/SCRUM-600_backend.md`
+**Plan Generado**: `ai-specs/changes/HU-600_backend.md`
 
 ```markdown
-# Backend Implementation Plan: SCRUM-600 Create Subscription API
+# Backend Implementation Plan: HU-600 Create Subscription API
 
 ## Overview
 Create a REST API endpoint to register new subscriptions with validation and event publishing.
@@ -71,7 +71,7 @@ Create a REST API endpoint to register new subscriptions with validation and eve
 
 ### Step 0: Create Feature Branch
 ```bash
-git checkout -b feature/SCRUM-600-api
+git checkout -b feature/HU-600-api
 ```
 
 ### Step 1: Domain Entity
@@ -177,17 +177,17 @@ public class SubscriptionEndpoints : IEndpointDefinition
 
 **Ejecución**:
 ```
-implement-backend-plan @SCRUM-600_backend.md
+implement-backend-plan @HU-600_backend.md
 ```
 
 **Proceso**:
 
 #### 2.1 Read and Parse Plan
 ```
-✓ Plan file exists: ai-specs/changes/SCRUM-600_backend.md
+✓ Plan file exists: ai-specs/changes/HU-600_backend.md
 ✓ Backend Type detected: API
 ✓ Standards Reference: ln-susc-api-standards.mdc
-✓ Branch name: feature/SCRUM-600-api
+✓ Branch name: feature/HU-600-api
 ✓ 11 implementation steps found
 ```
 
@@ -216,10 +216,10 @@ Agent Capabilities Loaded:
 
 #### 2.4 Create Feature Branch
 ```bash
-git checkout -b feature/SCRUM-600-api
+git checkout -b feature/HU-600-api
 ```
 ```
-✓ Branch created: feature/SCRUM-600-api
+✓ Branch created: feature/HU-600-api
 ```
 
 #### 2.5 Implement Steps Sequentially
@@ -307,11 +307,11 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 
 #### 2.9 Completion Status
 ```
-## Implementation Complete: SCRUM-600
+## Implementation Complete: HU-600
 
 **Backend Type**: API
 **Agent**: lanacion-api-developer
-**Branch**: feature/SCRUM-600-api
+**Branch**: feature/HU-600-api
 
 ### Progress
 - Steps completed: 11/11 ✓
@@ -348,7 +348,7 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 
 ## 🎯 Requerimiento 2: SQS Listener - Procesar Pago Recibido
 
-### Ticket: SCRUM-601
+### Ticket: HU-601
 
 **Descripción**: Como sistema de pagos, necesito procesar eventos de pagos recibidos desde la cola SQS para actualizar el estado de las suscripciones.
 
@@ -368,7 +368,7 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 
 **Análisis**:
 ```
-1. Leer ticket SCRUM-601
+1. Leer ticket HU-601
 2. Identificar tipo de backend:
    - ❌ NO menciona endpoint REST
    - ❌ NO menciona HTTP request/response
@@ -387,10 +387,10 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 - Requiere idempotencia (característica de Listeners)
 - Patrón: Consume Event → Validate → Process → Update DB
 
-**Plan Generado**: `ai-specs/changes/SCRUM-601_backend.md`
+**Plan Generado**: `ai-specs/changes/HU-601_backend.md`
 
 ```markdown
-# Backend Implementation Plan: SCRUM-601 Process Payment Received
+# Backend Implementation Plan: HU-601 Process Payment Received
 
 ## Overview
 Create an SQS listener to process payment received events and update subscription status.
@@ -414,7 +414,7 @@ Create an SQS listener to process payment received events and update subscriptio
 
 ### Step 0: Create Feature Branch
 ```bash
-git checkout -b feature/SCRUM-601-listener
+git checkout -b feature/HU-601-listener
 ```
 
 ### Step 1: Domain Event
@@ -524,17 +524,17 @@ services.AddHostedService<SqsQueueConsumerService<PaymentReceived>>();
 
 **Ejecución**:
 ```
-implement-backend-plan @SCRUM-601_backend.md
+implement-backend-plan @HU-601_backend.md
 ```
 
 **Proceso**:
 
 #### 2.1 Read and Parse Plan
 ```
-✓ Plan file exists: ai-specs/changes/SCRUM-601_backend.md
+✓ Plan file exists: ai-specs/changes/HU-601_backend.md
 ✓ Backend Type detected: Listener
 ✓ Standards Reference: ln-susc-listener-standards.mdc
-✓ Branch name: feature/SCRUM-601-listener
+✓ Branch name: feature/HU-601-listener
 ✓ 11 implementation steps found
 ```
 
@@ -563,10 +563,10 @@ Agent Capabilities Loaded:
 
 #### 2.4 Create Feature Branch
 ```bash
-git checkout -b feature/SCRUM-601-listener
+git checkout -b feature/HU-601-listener
 ```
 ```
-✓ Branch created: feature/SCRUM-601-listener
+✓ Branch created: feature/HU-601-listener
 ```
 
 #### 2.5 Implement Steps Sequentially
@@ -647,11 +647,11 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 
 #### 2.9 Completion Status
 ```
-## Implementation Complete: SCRUM-601
+## Implementation Complete: HU-601
 
 **Backend Type**: Listener
 **Agent**: lanacion-lstnr-developer
-**Branch**: feature/SCRUM-601-listener
+**Branch**: feature/HU-601-listener
 
 ### Progress
 - Steps completed: 11/11 ✓
@@ -685,7 +685,7 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 
 ## 📊 Matriz de Validación
 
-| Aspecto | SCRUM-600 (API) | SCRUM-601 (Listener) | ✅ Validación |
+| Aspecto | HU-600 (API) | HU-601 (Listener) | ✅ Validación |
 |---------|-----------------|----------------------|---------------|
 | **Detección de Tipo** | API | Listener | ✅ Correcto |
 | **Agente Seleccionado** | lanacion-api-developer | lanacion-lstnr-developer | ✅ Correcto |
@@ -754,7 +754,7 @@ ELSE IF plan.standards_reference == "ln-susc-listener-standards.mdc":
 ### 2. Flujo de Decisión
 
 ```
-User Story (SCRUM-600/601)
+User Story (HU-600/601)
     ↓
 lanacion-backend-planner
     ↓ (analiza requisitos)
@@ -777,7 +777,7 @@ Aplica patrones API        Aplica patrones Listener
 
 ### 3. Consistencia de Patrones
 
-| Patrón | API (SCRUM-600) | Listener (SCRUM-601) | ✅ Validación |
+| Patrón | API (HU-600) | Listener (HU-601) | ✅ Validación |
 |--------|-----------------|----------------------|---------------|
 | **Input Type** | Command (IRequest<Guid>) | Event (IRequest<ProcessResult>) | ✅ Diferenciado |
 | **Handler Return** | Guid (entity ID) | ProcessResult | ✅ Diferenciado |

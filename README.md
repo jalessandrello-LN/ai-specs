@@ -13,7 +13,7 @@ It's highly recommended to be used along with Spec-Driven Development frameworks
 │   ├── .agents/                  # Agent definitions (roles)
 │   ├── .commands/                # Commands (prompts/workflows)
 │   ├── .skills/                  # Skills documentation
-│   └── changes/                  # Generated plans (e.g., SCRUM-10_backend.md)
+│   └── changes/                  # Generated plans (e.g., HU-10_backend.md)
 │
 ├── openspec/                     # OpenSpec workspace (spec-driven development)
 │   ├── config.yaml               # Project context + per-artifact rules
@@ -99,7 +99,7 @@ Skills are advanced AI capabilities that enable **autonomous, multi-step impleme
 If your user story lacks detail or acceptance criteria, use the **`enrich-us`** command to enhance it:
 
 ```
-/enrich-us SCRUM-10
+/enrich-us HU-10
 ```
 
 This command analyzes the user story and generates:
@@ -115,13 +115,13 @@ This command analyzes the user story and generates:
 Use **`plan-ticket`** commands to generate detailed implementation plans:
 
 ```
-/plan-backend-ticket SCRUM-10
+/plan-backend-ticket HU-10
 ```
 
 or
 
 ```
-/plan-frontend-ticket SCRUM-15
+/plan-frontend-ticket HU-15
 ```
 
 This creates a comprehensive, step-by-step implementation plan in `ai-specs/changes/`.
@@ -131,13 +131,13 @@ This creates a comprehensive, step-by-step implementation plan in `ai-specs/chan
 Use **AI Skills** for autonomous implementation:
 
 ```
-implement-backend-plan @SCRUM-10_backend.md
+implement-backend-plan @HU-10_backend.md
 ```
 
 or
 
 ```
-implement-frontend-plan @SCRUM-15_frontend.md
+implement-frontend-plan @HU-15_frontend.md
 ```
 
 **The AI will autonomously**:
@@ -157,13 +157,13 @@ implement-frontend-plan @SCRUM-15_frontend.md
 - Requirements are unclear
 - Any blocker is encountered
 
-### Example: Implementing SCRUM-10 (Position Update Feature)
+### Example: Implementing HU-10 (Position Update Feature)
 
 #### Step 1: Enrich the User Story (Optional)
 
 **You say:**
 ```
-/enrich-us SCRUM-10
+/enrich-us HU-10
 ```
 
 **AI enhances** the user story with detailed acceptance criteria and technical considerations (skip if already detailed).
@@ -172,12 +172,12 @@ implement-frontend-plan @SCRUM-15_frontend.md
 
 **You say:**
 ```
-/plan-backend-ticket SCRUM-10
+/plan-backend-ticket HU-10
 ```
 
 **AI generates:**
 - Analyzes the ticket requirements
-- Creates `ai-specs/changes/SCRUM-10_backend.md` with:
+- Creates `ai-specs/changes/HU-10_backend.md` with:
   - Architecture context
   - Step-by-step implementation instructions
   - Complete test specifications (validation, service, controller layers)
@@ -189,13 +189,13 @@ implement-frontend-plan @SCRUM-15_frontend.md
 
 **You say:**
 ```
-implement-backend-plan @SCRUM-10_backend.md
+implement-backend-plan @HU-10_backend.md
 ```
 
 **AI executes autonomously:**
 1. Reads the plan and detects backend type (API or Listener)
 2. Adopts role: `lanacion-api-developer` or `lanacion-lstnr-developer`
-3. Creates the feature branch defined by the plan (e.g., `feature/SCRUM-10-api` or `feature/SCRUM-10-listener`)
+3. Creates the feature branch defined by the plan (e.g., `feature/HU-10-api` or `feature/HU-10-listener`)
 4. **Implements all steps in loop:**
    - Step 1/N: Domain ✓
    - Step 2/N: Application ✓
@@ -210,7 +210,7 @@ implement-backend-plan @SCRUM-10_backend.md
 
 ### 📝 Demo Enriched User Story
 
-Check out **`ai-specs/changes/SCRUM-10-Position-Update.md`** for a complete example of what an enriched user story looks like. This comprehensive document includes:
+Check out **`ai-specs/changes/HU-10-Position-Update.md`** for a complete example of what an enriched user story looks like. This comprehensive document includes:
 
 - **User Story**: Clear description with persona, goal, and benefit
 - **Technical Specification**: Complete technical implementation details
@@ -227,7 +227,7 @@ This enriched document transforms a simple user story into a detailed specificat
 
 ### 📋 Demo Implementation Plan
 
-Check out **`ai-specs/changes/SCRUM-10_backend.md`** for a complete example of what a feature implementation plan looks like. This comprehensive plan includes:
+Check out **`ai-specs/changes/HU-10_backend.md`** for a complete example of what a feature implementation plan looks like. This comprehensive plan includes:
 
 - **Architecture Context**: Layers, components, and dependencies
 - **Step-by-Step Instructions**: Validation → Service → Controller → Routes → Tests → Documentation

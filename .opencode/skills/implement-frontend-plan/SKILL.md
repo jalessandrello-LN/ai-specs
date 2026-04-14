@@ -27,7 +27,7 @@ This skill **orchestrates execution** while adopting the technical expertise of:
 - **Agent**: Provides technical knowledge, code patterns, UI/UX guidance
 - **Standards**: Define rules, conventions, accessibility requirements
 
-**Input**: Plan file path (e.g., `@SCRUM-501_frontend.md` or `ai-specs/changes/SCRUM-501_frontend.md`)
+**Input**: Plan file path (e.g., `@HU-501_frontend.md` or `ai-specs/changes/HU-501_frontend.md`)
 
 **Steps**
 
@@ -299,9 +299,9 @@ This skill **orchestrates execution** while adopting the technical expertise of:
 **Output During Implementation**
 
 ```
-## Implementing: SCRUM-501 (Frontend Feature)
+## Implementing: HU-501 (Frontend Feature)
 
-✓ Branch created: feature/SCRUM-501-subscription-form
+✓ Branch created: feature/HU-501-subscription-form
 
 Implementing Step 1/8: Create SubscriptionForm component
 ✓ Step 1/8 complete: Create SubscriptionForm component
@@ -324,10 +324,10 @@ Implementing Step 3/8: Implement state management
 **Output On Completion**
 
 ```
-## Implementation Complete: SCRUM-501
+## Implementation Complete: HU-501
 
 **Feature**: Subscription Form with Validation
-**Branch**: feature/SCRUM-501-subscription-form
+**Branch**: feature/HU-501-subscription-form
 
 ### Progress
 - Steps completed: 8/8 ✓
@@ -355,8 +355,8 @@ Implementing Step 3/8: Implement state management
 ### Next Steps
 1. Review implementation in browser
 2. Test user interactions manually
-3. Commit changes: git add . && git commit -m "SCRUM-501: Implement subscription form with validation"
-4. Push branch: git push origin feature/SCRUM-501-subscription-form
+3. Commit changes: git add . && git commit -m "HU-501: Implement subscription form with validation"
+4. Push branch: git push origin feature/HU-501-subscription-form
 5. Create Pull Request
 6. Link PR to ticket
 
@@ -366,7 +366,7 @@ Ready to commit and push?
 **Output On Pause (Issue Encountered)**
 
 ```
-## Implementation Paused: SCRUM-501
+## Implementation Paused: HU-501
 
 **Feature**: Subscription Form
 **Progress**: 4/8 steps complete
@@ -412,7 +412,7 @@ This skill replaces the `/develop-frontend` command with an autonomous implement
 
 **Before (Command-based):**
 ```
-/develop-frontend @SCRUM-501_frontend.md
+/develop-frontend @HU-501_frontend.md
 → User manually implements each step
 → User manually runs tests
 → User manually validates accessibility
@@ -421,7 +421,7 @@ This skill replaces the `/develop-frontend` command with an autonomous implement
 
 **After (Skill-based):**
 ```
-implement-frontend-plan @SCRUM-501_frontend.md
+implement-frontend-plan @HU-501_frontend.md
 → Autonomous implementation of all steps
 → Automatic testing and validation
 → Automatic accessibility checks

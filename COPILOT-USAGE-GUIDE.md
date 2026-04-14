@@ -31,9 +31,9 @@ GitHub Copilot busca automáticamente en estas ubicaciones:
 GitHub Copilot detectará automáticamente los prompts `.prompt.md`:
 
 ```
-@copilot plan-backend SCRUM-500
-@copilot develop-backend-api @SCRUM-500_backend.md
-@copilot develop-frontend @SCRUM-501_frontend.md
+@copilot plan-backend HU-500
+@copilot develop-backend-api @HU-500_backend.md
+@copilot develop-frontend @HU-501_frontend.md
 ```
 
 ### Opción 2: Usar Comandos de `.agent/commands/`
@@ -41,9 +41,9 @@ GitHub Copilot detectará automáticamente los prompts `.prompt.md`:
 GitHub Copilot también puede usar los comandos de `.agent`:
 
 ```
-@copilot plan-backend-copilot SCRUM-500
-@copilot develop-backend-api-copilot @SCRUM-500_backend.md
-@copilot develop-frontend-copilot @SCRUM-501_frontend.md
+@copilot plan-backend-copilot HU-500
+@copilot develop-backend-api-copilot @HU-500_backend.md
+@copilot develop-frontend-copilot @HU-501_frontend.md
 ```
 
 ### Opción 3: Usar Skills Autónomos
@@ -51,8 +51,8 @@ GitHub Copilot también puede usar los comandos de `.agent`:
 Para implementación completamente autónoma:
 
 ```
-@copilot implement-backend-plan-copilot @SCRUM-500_backend.md
-@copilot implement-frontend-plan-copilot @SCRUM-501_frontend.md
+@copilot implement-backend-plan-copilot @HU-500_backend.md
+@copilot implement-frontend-plan-copilot @HU-501_frontend.md
 ```
 
 ---
@@ -62,10 +62,10 @@ Para implementación completamente autónoma:
 ### Paso 1: Planificar la Feature
 
 ```
-@copilot plan-backend SCRUM-500
+@copilot plan-backend HU-500
 ```
 
-**Resultado**: Genera `ai-specs/changes/SCRUM-500_backend.md` con:
+**Resultado**: Genera `ai-specs/changes/HU-500_backend.md` con:
 - Descripción detallada
 - Pasos de implementación
 - Ejemplos de código
@@ -74,7 +74,7 @@ Para implementación completamente autónoma:
 ### Paso 2: Implementar Siguiendo el Plan
 
 ```
-@copilot develop-backend-api @SCRUM-500_backend.md
+@copilot develop-backend-api @HU-500_backend.md
 ```
 
 **Resultado**: Implementa automáticamente:
@@ -101,8 +101,8 @@ GitHub Copilot automáticamente:
 
 ```bash
 git add .
-git commit -m "[SCRUM-500]: Implement [description]"
-git push origin feature/scrum-500-[description]
+git commit -m "[HU-500]: Implement [description]"
+git push origin feature/HU-500-[description]
 ```
 
 ---
@@ -120,16 +120,16 @@ Los archivos deben estar en:
 
 Cuando referenciar archivos:
 ```
-@SCRUM-500_backend.md
-ai-specs/changes/SCRUM-500_backend.md
+@HU-500_backend.md
+ai-specs/changes/HU-500_backend.md
 ```
 
 ### 3. Mencionar Contexto
 
 Para mejor contexto, menciona:
 ```
-@copilot plan-backend SCRUM-500
-# Copilot buscará el ticket SCRUM-500 en el contexto
+@copilot plan-backend HU-500
+# Copilot buscará el ticket HU-500 en el contexto
 ```
 
 ---
@@ -139,11 +139,11 @@ Para mejor contexto, menciona:
 ### Ejemplo 1: Crear API REST
 
 ```
-@copilot plan-backend SCRUM-500
+@copilot plan-backend HU-500
 
 # Copilot genera el plan
 
-@copilot develop-backend-api @SCRUM-500_backend.md
+@copilot develop-backend-api @HU-500_backend.md
 
 # Copilot implementa automáticamente
 ```
@@ -151,11 +151,11 @@ Para mejor contexto, menciona:
 ### Ejemplo 2: Crear SQS Listener
 
 ```
-@copilot plan-backend SCRUM-501
+@copilot plan-backend HU-501
 
 # Copilot genera el plan
 
-@copilot develop-backend-listener @SCRUM-501_backend.md
+@copilot develop-backend-listener @HU-501_backend.md
 
 # Copilot implementa automáticamente
 ```
@@ -163,11 +163,11 @@ Para mejor contexto, menciona:
 ### Ejemplo 3: Crear Componente React
 
 ```
-@copilot plan-frontend SCRUM-502
+@copilot plan-frontend HU-502
 
 # Copilot genera el plan
 
-@copilot develop-frontend @SCRUM-502_frontend.md
+@copilot develop-frontend @HU-502_frontend.md
 
 # Copilot implementa automáticamente
 ```
@@ -284,15 +284,15 @@ Todos los prompts/comandos siguen:
 
 1. **Probar con GitHub Copilot**:
    ```
-   @copilot plan-backend SCRUM-500
+   @copilot plan-backend HU-500
    ```
 
 2. **Generar plan**:
-   - Copilot crea `ai-specs/changes/SCRUM-500_backend.md`
+   - Copilot crea `ai-specs/changes/HU-500_backend.md`
 
 3. **Implementar**:
    ```
-   @copilot develop-backend-api @SCRUM-500_backend.md
+   @copilot develop-backend-api @HU-500_backend.md
    ```
 
 4. **Validar**:
@@ -304,8 +304,8 @@ Todos los prompts/comandos siguen:
 5. **Commit y Push**:
    ```bash
    git add .
-   git commit -m "[SCRUM-500]: Implement [description]"
-   git push origin feature/scrum-500-[description]
+   git commit -m "[HU-500]: Implement [description]"
+   git push origin feature/HU-500-[description]
    ```
 
 ---

@@ -204,17 +204,17 @@ Pattern: `{product}-{env}-sqs-{event}`
 
 ```bash
 # 1. Enrich user story (optional)
-/enrich-us SCRUM-123
+/enrich-us HU-123
 
 # 2. Generate plan
-/plan-backend-ticket SCRUM-123
-# → Creates ai-specs/changes/SCRUM-123_backend.md
+/plan-backend-ticket HU-123
+# → Creates ai-specs/changes/HU-123_backend.md
 # → Plan references ln-susc-api-standards.mdc
 
 # 3. Implement
-/develop-backend @SCRUM-123_backend.md
+/develop-backend @HU-123_backend.md
 # → Uses lanacion-api-developer agent
-# → Creates feature/SCRUM-123-api branch
+# → Creates feature/HU-123-api branch
 # → Implements REST endpoints with CQRS
 # → Publishes events with Outbox Pattern
 # → Writes comprehensive tests
@@ -225,17 +225,17 @@ Pattern: `{product}-{env}-sqs-{event}`
 
 ```bash
 # 1. Enrich user story (optional)
-/enrich-us SCRUM-456
+/enrich-us HU-456
 
 # 2. Generate plan
-/plan-backend-ticket SCRUM-456
-# → Creates ai-specs/changes/SCRUM-456_backend.md
+/plan-backend-ticket HU-456
+# → Creates ai-specs/changes/HU-456_backend.md
 # → Plan references ln-susc-listener-standards.mdc
 
 # 3. Implement
-/develop-backend @SCRUM-456_backend.md
+/develop-backend @HU-456_backend.md
 # → Uses lanacion-lstnr-developer agent
-# → Creates feature/SCRUM-456-listener branch
+# → Creates feature/HU-456-listener branch
 # → Implements SQS event processor
 # → Adds idempotency handling
 # → Writes comprehensive tests

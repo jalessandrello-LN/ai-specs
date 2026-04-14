@@ -9,7 +9,7 @@ Generate a detailed implementation plan for a frontend feature (React component)
 ## Input
 
 Provide:
-- Ticket ID (e.g., SCRUM-501)
+- Ticket ID (e.g., HU-501)
 - Feature description
 - Component requirements
 - Acceptance criteria
@@ -148,7 +148,7 @@ Display:
 ## Plan Template
 
 ```markdown
-# SCRUM-501: Subscription Form Component
+# HU-501: Subscription Form Component
 
 ## Overview
 Create a subscription form component with validation, error handling, and accessibility.
@@ -502,14 +502,14 @@ Subscription form with validation, error handling, and accessibility.
 - [x] Error messages announced
 
 ## Next Steps
-Run: `develop-frontend @SCRUM-501_frontend.md`
+Run: `develop-frontend @HU-501_frontend.md`
 ```
 
 ## Output
 
 Display:
 ```
-## Plan Generated: SCRUM-501
+## Plan Generated: HU-501
 
 **Feature**: Subscription Form Component
 **Implementation Steps**: 8
@@ -523,8 +523,8 @@ Display:
 
 **State Management**: useState + useCallback
 
-**Plan Location**: ai-specs/changes/SCRUM-501_frontend.md
+**Plan Location**: ai-specs/changes/HU-501_frontend.md
 
 **Next Command**:
-develop-frontend @SCRUM-501_frontend.md
+develop-frontend @HU-501_frontend.md
 ```

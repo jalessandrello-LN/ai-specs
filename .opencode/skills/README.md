@@ -20,7 +20,7 @@ Skills are advanced AI capabilities that go beyond simple commands. They:
 
 **Usage**:
 ```
-implement-backend-plan @SCRUM-500_backend.md
+implement-backend-plan @HU-500_backend.md
 ```
 
 **What it does**:
@@ -51,7 +51,7 @@ implement-backend-plan @SCRUM-500_backend.md
 
 **Usage**:
 ```
-implement-frontend-plan @SCRUM-501_frontend.md
+implement-frontend-plan @HU-501_frontend.md
 ```
 
 **What it does**:

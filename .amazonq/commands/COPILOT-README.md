@@ -11,10 +11,10 @@ Genera un plan detallado para implementar una feature backend (API o Listener).
 
 **Uso**:
 ```
-plan-backend SCRUM-500
+plan-backend HU-500
 ```
 
-**Genera**: `ai-specs/changes/SCRUM-500_backend.md` con:
+**Genera**: `ai-specs/changes/HU-500_backend.md` con:
 - Descripción de la feature
 - Pasos de implementación detallados
 - Ejemplos de código completos
@@ -26,10 +26,10 @@ Genera un plan detallado para implementar una feature frontend (React component)
 
 **Uso**:
 ```
-plan-frontend SCRUM-501
+plan-frontend HU-501
 ```
 
-**Genera**: `ai-specs/changes/SCRUM-501_frontend.md` con:
+**Genera**: `ai-specs/changes/HU-501_frontend.md` con:
 - Descripción de la feature
 - Estructura de componentes
 - Pasos de implementación detallados
@@ -44,7 +44,7 @@ Implementa una REST API siguiendo el plan generado.
 
 **Uso**:
 ```
-develop-backend-api @SCRUM-500_backend.md
+develop-backend-api @HU-500_backend.md
 ```
 
 **Implementa**:
@@ -62,7 +62,7 @@ Implementa un SQS Listener siguiendo el plan generado.
 
 **Uso**:
 ```
-develop-backend-listener @SCRUM-500_backend.md
+develop-backend-listener @HU-500_backend.md
 ```
 
 **Implementa**:
@@ -80,7 +80,7 @@ Implementa un componente React siguiendo el plan generado.
 
 **Uso**:
 ```
-develop-frontend @SCRUM-501_frontend.md
+develop-frontend @HU-501_frontend.md
 ```
 
 **Implementa**:
@@ -122,9 +122,9 @@ Skill autónomo para implementación frontend.
 ### Paso 1: Planificar
 
 ```bash
-plan-backend SCRUM-500
+plan-backend HU-500
 # o
-plan-frontend SCRUM-501
+plan-frontend HU-501
 ```
 
 Genera un plan detallado en `ai-specs/changes/`
@@ -132,11 +132,11 @@ Genera un plan detallado en `ai-specs/changes/`
 ### Paso 2: Implementar
 
 ```bash
-develop-backend-api @SCRUM-500_backend.md
+develop-backend-api @HU-500_backend.md
 # o
-develop-backend-listener @SCRUM-500_backend.md
+develop-backend-listener @HU-500_backend.md
 # o
-develop-frontend @SCRUM-501_frontend.md
+develop-frontend @HU-501_frontend.md
 ```
 
 Implementa automáticamente siguiendo el plan.

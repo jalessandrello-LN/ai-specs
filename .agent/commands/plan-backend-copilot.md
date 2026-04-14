@@ -10,7 +10,7 @@ Generate a detailed implementation plan for a backend feature (API or Listener).
 ## Input
 
 Provide:
-- Ticket ID (e.g., SCRUM-500)
+- Ticket ID (e.g., HU-500)
 - Feature description
 - Backend type: API or Listener
 - Acceptance criteria
@@ -135,16 +135,16 @@ Display:
 
 Display:
 ```
-## Plan Generated: SCRUM-500
+## Plan Generated: HU-500
 
 **Backend Type**: [API | Listener]
 **Implementation Steps**: N
 **Estimated Effort**: [Low | Medium | High]
 
-**Plan Location**: ai-specs/changes/SCRUM-500_backend.md
+**Plan Location**: ai-specs/changes/HU-500_backend.md
 
 **Next Command**:
-develop-backend-api @SCRUM-500_backend.md
+develop-backend-api @HU-500_backend.md
 # or
-develop-backend-listener @SCRUM-500_backend.md
+develop-backend-listener @HU-500_backend.md
 ```

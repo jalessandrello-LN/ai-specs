@@ -12,7 +12,7 @@ Implement a REST API feature following Clean Architecture, CQRS, and Event-Drive
 - .NET 6 SDK installed
 - Git repository initialized
 - Working directory clean
-- Plan file available (e.g., `ai-specs/changes/SCRUM-500_backend.md`)
+- Plan file available (e.g., `ai-specs/changes/HU-500_backend.md`)
 
 ## Steps
 

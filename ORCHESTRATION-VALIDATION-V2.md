@@ -36,7 +36,7 @@ Validar que la arquitectura de orquestación funciona correctamente con los camb
 
 ## 🎯 Simulación 1: API REST - Crear Endpoint de Productos
 
-### Ticket: SCRUM-700
+### Ticket: HU-700
 
 **Descripción**: Como usuario del sistema, quiero crear productos mediante un endpoint REST para gestionar el catálogo de productos.
 
@@ -55,7 +55,7 @@ Validar que la arquitectura de orquestación funciona correctamente con los camb
 
 #### Análisis de Requisitos
 ```
-📝 Leyendo ticket SCRUM-700...
+📝 Leyendo ticket HU-700...
 
 Keywords detectados:
 ✓ "endpoint REST" → Indica API
@@ -83,10 +83,10 @@ Conclusión: REST API con CQRS y Event Publishing (Outbox Pattern)
 ```
 
 #### Plan Generado
-**Archivo**: `ai-specs/changes/SCRUM-700_backend.md`
+**Archivo**: `ai-specs/changes/HU-700_backend.md`
 
 ```markdown
-# Backend Implementation Plan: SCRUM-700 Create Product API
+# Backend Implementation Plan: HU-700 Create Product API
 
 ## Overview
 Create a REST API endpoint to manage product catalog with validation and event publishing.
@@ -148,13 +148,13 @@ npm run generate:template
 
 ### Step 1: Create Feature Branch
 
-**Branch Naming**: `feature/SCRUM-700-api`
+**Branch Naming**: `feature/HU-700-api`
 
 **Commands**:
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feature/SCRUM-700-api
+git checkout -b feature/HU-700-api
 ```
 
 ---
@@ -608,15 +608,15 @@ public class CreateProductHandlerTests
 
 **Skill**: `implement-backend-plan`
 
-**Input**: `@SCRUM-700_backend.md`
+**Input**: `@HU-700_backend.md`
 
 #### 2.1 Read and Parse Plan
 ```
-✅ Plan file exists: ai-specs/changes/SCRUM-700_backend.md
+✅ Plan file exists: ai-specs/changes/HU-700_backend.md
 ✅ Backend Type detected: API
 ✅ Standards Reference: ln-susc-api-standards.mdc
 ✅ Monorepo Integration: Yes
-✅ Branch name: feature/SCRUM-700-api
+✅ Branch name: feature/HU-700-api
 ✅ 12 implementation steps found
 ```
 
@@ -678,10 +678,10 @@ Interactive prompts:
 
 #### 2.5 Create Feature Branch
 ```bash
-git checkout -b feature/SCRUM-700-api
+git checkout -b feature/HU-700-api
 ```
 ```
-✅ Branch created: feature/SCRUM-700-api
+✅ Branch created: feature/HU-700-api
 ```
 
 #### 2.6 Implement Steps Sequentially
@@ -777,11 +777,11 @@ Test Results:
 
 #### 2.9 Completion Status
 ```
-## ✅ Implementation Complete: SCRUM-700
+## ✅ Implementation Complete: HU-700
 
 **Backend Type**: API
 **Agent**: lanacion-api-developer
-**Branch**: feature/SCRUM-700-api
+**Branch**: feature/HU-700-api
 **Monorepo**: Yes (scaffolded with npm run generate:template)
 
 ### Progress

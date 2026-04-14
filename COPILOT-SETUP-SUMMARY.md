@@ -59,21 +59,21 @@ Complementando la estructura existente de `.agent`
 ### Paso 1: Planificar
 ```bash
 # En .github/prompts/ o .agent/commands/
-plan-backend SCRUM-500
-plan-frontend SCRUM-501
+plan-backend HU-500
+plan-frontend HU-501
 ```
 
 ### Paso 2: Implementar
 ```bash
 # Usando prompts de .github/prompts/
-develop-backend-api @SCRUM-500_backend.md
-develop-backend-listener @SCRUM-500_backend.md
-develop-frontend @SCRUM-501_frontend.md
+develop-backend-api @HU-500_backend.md
+develop-backend-listener @HU-500_backend.md
+develop-frontend @HU-501_frontend.md
 
 # O usando comandos de .agent/commands/
-develop-backend-api-copilot @SCRUM-500_backend.md
-develop-backend-listener-copilot @SCRUM-500_backend.md
-develop-frontend-copilot @SCRUM-501_frontend.md
+develop-backend-api-copilot @HU-500_backend.md
+develop-backend-listener-copilot @HU-500_backend.md
+develop-frontend-copilot @HU-501_frontend.md
 ```
 
 ### Paso 3: Validar

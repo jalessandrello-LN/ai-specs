@@ -637,20 +637,20 @@ public async Task<ProcessResult> Handle(SuscripcionCreada @event, CancellationTo
 
 ```bash
 # Create feature branch
-git checkout -b feature/SCRUM-123-listener
+git checkout -b feature/HU-123-listener
 
 # Commit with descriptive messages
 git commit -m "feat: add suscripcion-creada event processor"
 
 # Push and create PR
-git push origin feature/SCRUM-123-listener
+git push origin feature/HU-123-listener
 ```
 
 ### Branch Naming
 
-- Feature: `feature/SCRUM-123-listener`
-- Bugfix: `bugfix/SCRUM-456-listener`
-- Hotfix: `hotfix/SCRUM-789-listener`
+- Feature: `feature/HU-123-listener`
+- Bugfix: `bugfix/HU-456-listener`
+- Hotfix: `hotfix/HU-789-listener`
 
 ### Development Scripts
 

@@ -148,7 +148,7 @@ Elimina código de ejemplo del template no relacionado con la HU actual.
 /scaffold-api LN.Sus.Cobros.Api 5010 5011 10
 
 # 2. Planificar el ticket
-/plan-backend-ticket SCRUM-10
+/plan-backend-ticket HU-10
 
 # 3. Implementar (command + query + endpoint)
 /create-repository Cobro MySQL
@@ -166,7 +166,7 @@ Elimina código de ejemplo del template no relacionado con la HU actual.
 /scaffold-listener LN.Sus.Ventas.Listener 20
 
 # 2. Planificar el ticket
-/plan-listener-ticket SCRUM-42
+/plan-listener-ticket HU-42
 
 # 3. Agregar evento y configurar
 /add-event Venta_Registrada ventas-alta "Persistir venta y notificar"

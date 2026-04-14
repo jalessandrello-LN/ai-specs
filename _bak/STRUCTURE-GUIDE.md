@@ -129,7 +129,7 @@ ai-specs/
 - Actualiza documentación
 - Pausa en errores
 
-**Entrada**: Plan file (`@SCRUM-500_backend.md`)
+**Entrada**: Plan file (`@HU-500_backend.md`)
 
 #### 2. implement-frontend-plan
 **Función**: Implementación autónoma de frontend
@@ -141,7 +141,7 @@ ai-specs/
 - Actualiza documentación
 - Pausa en errores
 
-**Entrada**: Plan file (`@SCRUM-501_frontend.md`)
+**Entrada**: Plan file (`@HU-501_frontend.md`)
 
 #### 3. implement-backend-plan-copilot
 **Función**: Versión optimizada para GitHub Copilot
@@ -187,7 +187,7 @@ Genera plan detallado para backend (API o Listener)
 - Ejemplos de código
 - Estrategia de testing
 
-**Uso**: `plan-backend-ticket SCRUM-500`
+**Uso**: `plan-backend-ticket HU-500`
 
 ##### plan-frontend-ticket
 Genera plan detallado para frontend (React)
@@ -197,7 +197,7 @@ Genera plan detallado para frontend (React)
 - Ejemplos de código
 - Requisitos de accesibilidad
 
-**Uso**: `plan-frontend-ticket SCRUM-501`
+**Uso**: `plan-frontend-ticket HU-501`
 
 #### Development Commands
 
@@ -209,7 +209,7 @@ Implementa backend siguiendo plan
 - Ejecuta tests
 - Actualiza documentación
 
-**Uso**: `develop-backend @SCRUM-500_backend.md`
+**Uso**: `develop-backend @HU-500_backend.md`
 
 ##### develop-frontend
 Implementa frontend siguiendo plan
@@ -219,29 +219,29 @@ Implementa frontend siguiendo plan
 - Ejecuta tests
 - Valida accesibilidad
 
-**Uso**: `develop-frontend @SCRUM-501_frontend.md`
+**Uso**: `develop-frontend @HU-501_frontend.md`
 
 #### Copilot-Optimized Commands
 
 ##### plan-backend-copilot
 Versión optimizada para GitHub Copilot
-**Uso**: `plan-backend-copilot SCRUM-500`
+**Uso**: `plan-backend-copilot HU-500`
 
 ##### plan-frontend-copilot
 Versión optimizada para GitHub Copilot
-**Uso**: `plan-frontend-copilot SCRUM-501`
+**Uso**: `plan-frontend-copilot HU-501`
 
 ##### develop-backend-api-copilot
 Implementar REST API (Copilot)
-**Uso**: `develop-backend-api-copilot @SCRUM-500_backend.md`
+**Uso**: `develop-backend-api-copilot @HU-500_backend.md`
 
 ##### develop-backend-listener-copilot
 Implementar SQS Listener (Copilot)
-**Uso**: `develop-backend-listener-copilot @SCRUM-500_backend.md`
+**Uso**: `develop-backend-listener-copilot @HU-500_backend.md`
 
 ##### develop-frontend-copilot
 Implementar componente React (Copilot)
-**Uso**: `develop-frontend-copilot @SCRUM-501_frontend.md`
+**Uso**: `develop-frontend-copilot @HU-501_frontend.md`
 
 #### La Nación Specific Commands
 
@@ -358,24 +358,24 @@ Implementar componente React
 #### Paso 1: Planificar
 ```bash
 # Opción 1: Usar comando
-plan-backend-ticket SCRUM-500
+plan-backend-ticket HU-500
 
 # Opción 2: Usar prompt Copilot
-@copilot plan-backend SCRUM-500
+@copilot plan-backend HU-500
 ```
 
-**Resultado**: `ai-specs/changes/SCRUM-500_backend.md`
+**Resultado**: `ai-specs/changes/HU-500_backend.md`
 
 #### Paso 2: Implementar
 ```bash
 # Opción 1: Usar comando
-develop-backend @SCRUM-500_backend.md
+develop-backend @HU-500_backend.md
 
 # Opción 2: Usar skill
-implement-backend-plan @SCRUM-500_backend.md
+implement-backend-plan @HU-500_backend.md
 
 # Opción 3: Usar prompt Copilot
-@copilot develop-backend-api @SCRUM-500_backend.md
+@copilot develop-backend-api @HU-500_backend.md
 ```
 
 #### Paso 3: Validar
@@ -386,8 +386,8 @@ implement-backend-plan @SCRUM-500_backend.md
 #### Paso 4: Commit y Push
 ```bash
 git add .
-git commit -m "[SCRUM-500]: Implement [description]"
-git push origin feature/scrum-500-[description]
+git commit -m "[HU-500]: Implement [description]"
+git push origin feature/HU-500-[description]
 ```
 
 ### Seleccionar Herramienta

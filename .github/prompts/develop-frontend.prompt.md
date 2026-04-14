@@ -12,7 +12,7 @@ Implement a React component with TypeScript, state management, testing, and acce
 - npm/yarn available
 - Git repository initialized
 - Working directory clean
-- Plan file available (e.g., `ai-specs/changes/SCRUM-501_frontend.md`)
+- Plan file available (e.g., `ai-specs/changes/HU-501_frontend.md`)
 
 ## Steps
 

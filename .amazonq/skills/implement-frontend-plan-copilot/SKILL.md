@@ -10,7 +10,7 @@ Autonomous implementation of frontend features following a detailed plan.
 
 ## Input
 
-Plan file path (e.g., `@SCRUM-501_frontend.md` or `ai-specs/changes/SCRUM-501_frontend.md`)
+Plan file path (e.g., `@HU-501_frontend.md` or `ai-specs/changes/HU-501_frontend.md`)
 
 ## Execution Steps
 

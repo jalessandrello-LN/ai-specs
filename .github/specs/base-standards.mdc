@@ -22,7 +22,7 @@ alwaysApply: true
 - **¨Spanish**: 
     - Code (comments, error messages, log messages)
     - Documentation (README, guides, API docs)
-    - Jira tickets (titles, descriptions, comments)       
+    - Azure DevOps tickets (titles, descriptions, comments)       
     - Azure Work Items (titles, descriptions, comments)       
     - Git commit messages
     - Test descriptions

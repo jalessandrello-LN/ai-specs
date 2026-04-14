@@ -763,20 +763,20 @@ var connectionString = "Server=localhost;Database=db;User=admin;Password=123";  
 
 ```bash
 # Create feature branch
-git checkout -b feature/SCRUM-123-backend
+git checkout -b feature/HU-123-backend
 
 # Commit with descriptive messages
 git commit -m "feat: add create subscription endpoint"
 
 # Push and create PR
-git push origin feature/SCRUM-123-backend
+git push origin feature/HU-123-backend
 ```
 
 ### Branch Naming
 
-- Feature: `feature/SCRUM-123-backend`
-- Bugfix: `bugfix/SCRUM-456-backend`
-- Hotfix: `hotfix/SCRUM-789-backend`
+- Feature: `feature/HU-123-backend`
+- Bugfix: `bugfix/HU-456-backend`
+- Hotfix: `hotfix/HU-789-backend`
 
 ### Development Scripts
 

@@ -33,7 +33,7 @@ This skill **orchestrates execution** while adopting the technical expertise of:
 - **Agent**: Provides technical knowledge, code patterns, architectural guidance
 - **Standards**: Define rules, conventions, and quality requirements
 
-**Input**: Plan file path (e.g., `@SCRUM-500_backend.md` or `ai-specs/changes/SCRUM-500_backend.md`)
+**Input**: Plan file path (e.g., `@HU-500_backend.md` or `ai-specs/changes/HU-500_backend.md`)
 
 **Steps**
 
@@ -246,11 +246,11 @@ This skill **orchestrates execution** while adopting the technical expertise of:
 **Output During Implementation**
 
 ```
-## Implementing: SCRUM-500 (Backend Type: Listener)
+## Implementing: HU-500 (Backend Type: Listener)
 
 Adopting role: lanacion-lstnr-developer
 
-✓ Branch created: feature/SCRUM-500-listener
+✓ Branch created: feature/HU-500-listener
 
 Implementing Step 1/11: Domain Event
 ✓ Step 1/11 complete: Domain Event
@@ -271,11 +271,11 @@ Implementing Step 3/11: Repository Interface
 **Output On Completion**
 
 ```
-## Implementation Complete: SCRUM-500
+## Implementation Complete: HU-500
 
 **Backend Type**: Listener
 **Agent**: lanacion-lstnr-developer
-**Branch**: feature/SCRUM-500-listener
+**Branch**: feature/HU-500-listener
 
 ### Progress
 - Steps completed: 11/11 ✓
@@ -295,8 +295,8 @@ Implementing Step 3/11: Repository Interface
 
 ### Next Steps
 1. Review implementation
-2. Commit changes: git add . && git commit -m "SCRUM-500: Implement subscription sync listener"
-3. Push branch: git push origin feature/SCRUM-500-listener
+2. Commit changes: git add . && git commit -m "HU-500: Implement subscription sync listener"
+3. Push branch: git push origin feature/HU-500-listener
 4. Create Pull Request
 5. Link PR to ticket
 
@@ -306,7 +306,7 @@ Ready to commit and push?
 **Output On Pause (Issue Encountered)**
 
 ```
-## Implementation Paused: SCRUM-500
+## Implementation Paused: HU-500
 
 **Backend Type**: API
 **Agent**: lanacion-api-developer
@@ -350,7 +350,7 @@ This skill replaces the `/develop-backend` command with an autonomous implementa
 
 **Before (Command-based):**
 ```
-/develop-backend @SCRUM-500_backend.md
+/develop-backend @HU-500_backend.md
 → User manually implements each step
 → User manually runs tests
 → User manually updates docs
@@ -358,7 +358,7 @@ This skill replaces the `/develop-backend` command with an autonomous implementa
 
 **After (Skill-based):**
 ```
-implement-backend-plan @SCRUM-500_backend.md
+implement-backend-plan @HU-500_backend.md
 → Autonomous implementation of all steps
 → Automatic testing and validation
 → Automatic documentation updates

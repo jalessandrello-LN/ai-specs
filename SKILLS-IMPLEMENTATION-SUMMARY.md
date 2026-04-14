@@ -93,7 +93,7 @@ Documentation Updated
 
 **Usage**:
 ```
-implement-backend-plan @SCRUM-500_backend.md
+implement-backend-plan @HU-500_backend.md
 ```
 
 **What it does**:
@@ -130,7 +130,7 @@ implement-backend-plan @SCRUM-500_backend.md
 
 **Usage**:
 ```
-implement-frontend-plan @SCRUM-501_frontend.md
+implement-frontend-plan @HU-501_frontend.md
 ```
 
 **What it does**:
@@ -330,12 +330,12 @@ Full documentation available in:
 ### For Users
 
 1. Continue using commands for planning:
-   - `/enrich-us SCRUM-500`
-   - `/plan-backend-ticket SCRUM-500`
+   - `/enrich-us HU-500`
+   - `/plan-backend-ticket HU-500`
 
 2. Use skills for implementation:
-   - `implement-backend-plan @SCRUM-500_backend.md`
-   - `implement-frontend-plan @SCRUM-501_frontend.md`
+   - `implement-backend-plan @HU-500_backend.md`
+   - `implement-frontend-plan @HU-501_frontend.md`
 
 3. Review autonomous implementation results
 4. Commit and push when satisfied

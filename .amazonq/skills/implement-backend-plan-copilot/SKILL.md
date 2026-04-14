@@ -10,7 +10,7 @@ Autonomous implementation of backend features following a detailed plan.
 
 ## Input
 
-Plan file path (e.g., `@SCRUM-500_backend.md` or `ai-specs/changes/SCRUM-500_backend.md`)
+Plan file path (e.g., `@HU-500_backend.md` or `ai-specs/changes/HU-500_backend.md`)
 
 ## Execution Steps
 

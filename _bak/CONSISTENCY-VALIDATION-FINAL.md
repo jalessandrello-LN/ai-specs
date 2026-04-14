@@ -27,7 +27,7 @@
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ PASO 1: Enrich User Story (Opcional)                           │
-│ Comando: /enrich-us SCRUM-500                                   │
+│ Comando: /enrich-us HU-500                                   │
 │ Agente: product-strategy-analyst                               │
 │ Output: User story enriquecido con acceptance criteria         │
 │ ✅ VALIDADO: Agente correcto                                    │
@@ -35,7 +35,7 @@
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ PASO 2: Generate Implementation Plan                           │
-│ Comando: /plan-backend-ticket SCRUM-500                         │
+│ Comando: /plan-backend-ticket HU-500                         │
 │ Agente: lanacion-backend-planner                               │
 │                                                                 │
 │ Detección Automática:                                          │
@@ -43,13 +43,13 @@
 │ • Backend Type: Listener ✅                                     │
 │ • Consulta: ln-susc-listener-standards.mdc ✅                   │
 │                                                                 │
-│ Output: ai-specs/changes/SCRUM-500_backend.md                  │
+│ Output: ai-specs/changes/HU-500_backend.md                  │
 │                                                                 │
 │ Contenido del Plan:                                            │
 │ • Backend Type: Listener ✅                                     │
 │ • Template: ln-SQSlstnr ✅                                      │
 │ • Standards Reference: ln-susc-listener-standards.mdc ✅        │
-│ • Branch: feature/SCRUM-500-listener ✅                         │
+│ • Branch: feature/HU-500-listener ✅                         │
 │ • Steps: Event → Processor → Repository → Worker Config ✅     │
 │                                                                 │
 │ ✅ VALIDADO: Plan correcto para Listener                        │
@@ -57,10 +57,10 @@
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ PASO 3: Implement Following Plan (AUTONOMOUS)                  │
-│ Skill: implement-backend-plan @SCRUM-500_backend.md            │
+│ Skill: implement-backend-plan @HU-500_backend.md            │
 │                                                                 │
 │ Selección Automática de Agente:                                │
-│ 1. Lee plan: SCRUM-500_backend.md                              │
+│ 1. Lee plan: HU-500_backend.md                              │
 │ 2. Detecta referencia: ln-susc-listener-standards.mdc          │
 │ 3. Adopta rol: lanacion-lstnr-developer ✅                      │
 │                                                                 │
@@ -68,7 +68,7 @@
 │ Standards: ln-susc-listener-standards.mdc                      │
 │                                                                 │
 │ Implementación Autónoma (Loop):                                │
-│ • Branch: feature/SCRUM-500-listener ✅                         │
+│ • Branch: feature/HU-500-listener ✅                         │
 │ • Step 1/11: Domain Event ✅                                    │
 │ • Step 2/11: MediatR Handler ✅                                 │
 │ • Step 3/11: Repository Interface ✅                            │
@@ -98,14 +98,14 @@
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ PASO 1: Enrich User Story (Opcional)                           │
-│ Comando: /enrich-us SCRUM-501                                   │
+│ Comando: /enrich-us HU-501                                   │
 │ Agente: product-strategy-analyst                               │
 │ ✅ VALIDADO                                                      │
 └─────────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ PASO 2: Generate Implementation Plan                           │
-│ Comando: /plan-backend-ticket SCRUM-501                         │
+│ Comando: /plan-backend-ticket HU-501                         │
 │ Agente: lanacion-backend-planner                               │
 │                                                                 │
 │ Detección Automática:                                          │
@@ -113,13 +113,13 @@
 │ • Backend Type: API ✅                                          │
 │ • Consulta: ln-susc-api-standards.mdc ✅                        │
 │                                                                 │
-│ Output: ai-specs/changes/SCRUM-501_backend.md                  │
+│ Output: ai-specs/changes/HU-501_backend.md                  │
 │                                                                 │
 │ Contenido del Plan:                                            │
 │ • Backend Type: API ✅                                          │
 │ • Template: LaNacion.Core.Templates.Web.Api.Minimal ✅          │
 │ • Standards Reference: ln-susc-api-standards.mdc ✅             │
-│ • Branch: feature/SCRUM-501-api ✅                              │
+│ • Branch: feature/HU-501-api ✅                              │
 │ • Steps: Command → Validator → Handler → Endpoint ✅           │
 │                                                                 │
 │ ✅ VALIDADO: Plan correcto para API                             │
@@ -127,10 +127,10 @@
                             ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ PASO 3: Implement Following Plan (AUTONOMOUS)                  │
-│ Skill: implement-backend-plan @SCRUM-501_backend.md            │
+│ Skill: implement-backend-plan @HU-501_backend.md            │
 │                                                                 │
 │ Selección Automática de Agente:                                │
-│ 1. Lee plan: SCRUM-501_backend.md                              │
+│ 1. Lee plan: HU-501_backend.md                              │
 │ 2. Detecta referencia: ln-susc-api-standards.mdc               │
 │ 3. Adopta rol: lanacion-api-developer ✅                        │
 │                                                                 │
@@ -138,7 +138,7 @@
 │ Standards: ln-susc-api-standards.mdc                           │
 │                                                                 │
 │ Implementación Autónoma (Loop):                                │
-│ • Branch: feature/SCRUM-501-api ✅                              │
+│ • Branch: feature/HU-501-api ✅                              │
 │ • Step 1/11: Command Definition ✅                              │
 │ • Step 2/11: Validator (FluentValidation) ✅                    │
 │ • Step 3/11: Handler (IRequestHandler) ✅                       │
@@ -303,8 +303,8 @@ LaNacion.Suscripciones.SqsRdr/
 | **Command** | `cmd-{verb}-{entity}` | `cmd-create-subscription` | ✅ |
 | **Event** | `evt-{squad}-{entity}-{verb-past}` | `evt-susc-suscripcion-creada` | ✅ |
 | **Queue** | `{product}-{env}-sqs-{event}` | `suscripciones-prod-sqs-ventas-alta` | ✅ |
-| **Branch API** | `feature/{ticket}-api` | `feature/SCRUM-501-api` | ✅ |
-| **Branch Listener** | `feature/{ticket}-listener` | `feature/SCRUM-500-listener` | ✅ |
+| **Branch API** | `feature/{ticket}-api` | `feature/HU-501-api` | ✅ |
+| **Branch Listener** | `feature/{ticket}-listener` | `feature/HU-500-listener` | ✅ |
 
 ---
 

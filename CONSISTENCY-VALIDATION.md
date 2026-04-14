@@ -129,7 +129,7 @@ El comando no especifica qué agente usar para implementación. Es genérico y n
 
 **Contenido Actual**:
 ```markdown
-Please analyze and fix the Jira ticket: $ARGUMENTS.
+Please analyze and fix the Azure DevOps ticket: $ARGUMENTS.
 
 Follow these steps:
 1. Understand the problem described in the ticket

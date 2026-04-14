@@ -148,10 +148,10 @@ d:\template\ai-specs\
 ### Workflow Recomendado
 ```bash
 # 1. Planificar
-@copilot plan-backend SCRUM-500
+@copilot plan-backend HU-500
 
 # 2. Implementar
-@copilot develop-backend-api @SCRUM-500_backend.md
+@copilot develop-backend-api @HU-500_backend.md
 
 # 3. Validar
 # - Compilación ✓
@@ -161,8 +161,8 @@ d:\template\ai-specs\
 
 # 4. Commit y Push
 git add .
-git commit -m "[SCRUM-500]: Implement [description]"
-git push origin feature/scrum-500-[description]
+git commit -m "[HU-500]: Implement [description]"
+git push origin feature/HU-500-[description]
 ```
 
 ---

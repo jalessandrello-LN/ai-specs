@@ -10,7 +10,7 @@ Generate a detailed implementation plan for a frontend feature (React component)
 ## Input
 
 Provide:
-- Ticket ID (e.g., SCRUM-501)
+- Ticket ID (e.g., HU-501)
 - Feature description
 - Component requirements
 - Acceptance criteria
@@ -150,7 +150,7 @@ Display:
 
 Display:
 ```
-## Plan Generated: SCRUM-501
+## Plan Generated: HU-501
 
 **Feature**: [Feature Name]
 **Implementation Steps**: N
@@ -161,8 +161,8 @@ Display:
 
 **State Management**: [Approach]
 
-**Plan Location**: ai-specs/changes/SCRUM-501_frontend.md
+**Plan Location**: ai-specs/changes/HU-501_frontend.md
 
 **Next Command**:
-develop-frontend @SCRUM-501_frontend.md
+develop-frontend @HU-501_frontend.md
 ```

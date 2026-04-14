@@ -9,7 +9,7 @@ Genera un plan de implementación detallado para un ticket de listener SQS, espe
 ```
 
 ## Parámetros
-- **TicketId** (requerido): ID del ticket Jira (ej: `SCRUM-42`)
+- **TicketId** (requerido): ID del ticket Azure DevOps (ej: `HU-42`)
 
 ## Referencia
 Adoptar el rol de `ai-specs/.agents/lanacion-backend-planner.md` y consultar:
@@ -77,7 +77,7 @@ Branch: feature/[TicketId]-listener
 ## Ejemplo
 
 ```
-/plan-listener-ticket SCRUM-42
+/plan-listener-ticket HU-42
 ```
 
-Genera `ai-specs/changes/SCRUM-42_backend.md` con plan completo para listener SQS.
+Genera `ai-specs/changes/HU-42_backend.md` con plan completo para listener SQS.
