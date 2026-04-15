@@ -358,9 +358,9 @@ For more details, see `ai-specs/.skills/README.md`
 
 ## 📚 Technical context
 
-### Reference Examples (from LIDR Project)
+### Reference Examples
 
-The following files are included as **reference examples** from the LIDR project. You should create your own versions tailored to your specific project:
+The following files are included as **reference examples**. You should create your own versions tailored to your specific project:
 
 - **API Specification**: `ai-specs/specs/api-spec.yml` (OpenAPI 3.0 format)
   - *Create your own API spec documenting your project's endpoints*
