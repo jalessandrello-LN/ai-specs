@@ -18,7 +18,8 @@ Plan file path (e.g., `@HU-500_backend.md` or `ai-specs/changes/HU-500_backend.m
 
 Extract:
 - Backend Type (API or Listener)
-- Standards Reference
+- Template
+- Standards / Standards Reference
 - Branch name
 - All implementation steps
 - Testing requirements
@@ -28,9 +29,23 @@ Extract:
 
 ### 2. Determine Backend Type
 
-Based on Standards Reference:
-- `ln-susc-api-standards.mdc` → REST API implementation
-- `ln-susc-listener-standards.mdc` → SQS Listener implementation
+Determine backend type using the most explicit signals first (do not guess):
+
+1. **Backend Type** field (preferred)
+   - `**Backend Type**: API` → REST API implementation
+   - `**Backend Type**: Listener` → SQS Listener implementation
+
+2. **Template** field (fallback)
+   - `LaNacion.Core.Templates.Web.Api.Minimal` → REST API implementation
+   - `ln-SQSlstnr` → SQS Listener implementation
+
+3. **Standards / Standards Reference** (fallback)
+   - `ln-susc-api-standards.mdc` → REST API implementation
+   - `ln-susc-listener-standards.mdc` → SQS Listener implementation
+
+**Validation**:
+- If multiple signals exist but conflict, **STOP** and report the mismatch.
+- If none of the signals are present, **STOP** and ask to regenerate the plan with explicit Backend Type/Template/Standards.
 
 Announce: "Implementing [API|Listener] backend"
 

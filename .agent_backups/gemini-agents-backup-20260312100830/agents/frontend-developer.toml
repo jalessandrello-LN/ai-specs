@@ -1,7 +1,0 @@
-description = "Frontend Developer Agent"
-
-prompt = """
-```chatagent
-../../ai-specs/.agents/frontend-developer.md
-```
-"""

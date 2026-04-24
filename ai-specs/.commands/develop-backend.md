@@ -1,8 +1,8 @@
 # Role
 
 Adopt the role based on the implementation plan type:
-- If plan references `ln-susc-api-standards.mdc` → Use `.agents/lanacion-api-developer.md`
-- If plan references `ln-susc-listener-standards.mdc` → Use `.agents/lanacion-lstnr-developer.md`
+- If plan says `**Backend Type**: API` (or Template is Minimal API, or references `ln-susc-api-standards.mdc`) → Use `ai-specs/.agents/lanacion-api-developer.md`
+- If plan says `**Backend Type**: Listener` (or Template is ln-SQSlstnr, or references `ln-susc-listener-standards.mdc`) → Use `ai-specs/.agents/lanacion-lstnr-developer.md`
 
 # Task
 
@@ -21,19 +21,22 @@ Before implementing, you MUST analyze the plan file to determine the correct age
 ### Step 1: Read the Implementation Plan
 
 1. Open and read the plan file: `$ARGUMENTS`
-2. Locate the **"Standards Reference"** or **"Architecture Context"** section
-3. Identify which standards document is referenced
+2. Locate one of these signals (prefer the most explicit):
+   - `**Backend Type**: API|Listener`
+   - `**Template**: LaNacion.Core.Templates.Web.Api.Minimal|ln-SQSlstnr`
+   - `**Standards**:` or a standards reference (`ln-susc-api-standards.mdc` / `ln-susc-listener-standards.mdc`)
+3. Identify backend type and the standards document referenced
 
 ### Step 2: Detect Backend Type and Adopt Role
 
-**IF** plan references `ln-susc-api-standards.mdc`:
+**IF** plan indicates **API** (Backend Type / Template / Standards):
 - **Backend Type**: API (REST endpoints)
 - **Adopt Role**: `ai-specs/.agents/lanacion-api-developer.md`
 - **Template**: LaNacion.Core.Templates.Web.Api.Minimal
 - **Branch Pattern**: `feature/[TICKET-ID]-api`
 - **Key Patterns**: Commands/Queries, HTTP endpoints, Event publishing (Outbox)
 
-**ELSE IF** plan references `ln-susc-listener-standards.mdc`:
+**ELSE IF** plan indicates **Listener** (Backend Type / Template / Standards):
 - **Backend Type**: Listener (SQS event processor)
 - **Adopt Role**: `ai-specs/.agents/lanacion-lstnr-developer.md`
 - **Template**: ln-SQSlstnr
@@ -41,8 +44,11 @@ Before implementing, you MUST analyze the plan file to determine the correct age
 - **Key Patterns**: Event processors, ProcessResult, Idempotency, SQS consumption
 
 **ELSE**:
-- **ERROR**: Cannot determine backend type from plan
-- **Action**: Ask user to clarify or regenerate plan with `/plan-backend-ticket`
+  - **ERROR**: Cannot determine backend type from plan
+  - **Action**: Ask user to clarify or regenerate plan with `/plan-backend-ticket`
+
+**Conflict rule**:
+- If the plan contains multiple signals but they conflict (e.g., Backend Type says API but Standards reference Listener), STOP and ask to fix/regenerate the plan before implementing.
 
 ### Step 3: Verify Role Adoption
 

@@ -1,0 +1,1355 @@
+# OpenSpec Large Project Workflow - Strategy & Implementation Guide
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Key Concepts](#key-concepts)
+3. [Phase 0: Project Initialization](#phase-0-project-initialization)
+4. [Phase 1: Requirements Discovery & Planning](#phase-1-requirements-discovery--planning)
+5. [Phase 2: Epic & MVP Definition](#phase-2-epic--mvp-definition)
+6. [Phase 3: User Story Generation](#phase-3-user-story-generation)
+7. [Phase 4: Individual HU Implementation](#phase-4-individual-hu-implementation)
+8. [Phase 5: Integration & Release](#phase-5-integration--release)
+9. [Command Reference](#command-reference)
+10. [Template Examples](#template-examples)
+
+---
+
+## Overview
+
+This document defines a **Structured Incremental Development Workflow** using OpenSpec for large projects, based on:
+
+- **Vision.md** - Requirements document
+- **architecture-1.solution-architecture.md** / **architecture-2.webapis-architecture.md** / **architecture-3.listener-architecture.md** - Architecture specification (Microservices + Event-Driven)
+
+### Workflow Philosophy
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    NO BIG BANG IMPLEMENTATION                        │
+│                                                                      │
+│  Large Project ────────────────────────────────────────────────────► │
+│       │                                                              │
+│       ├── Epic 1 ──► MVP 1 ──► HU 1.1 ──► HU 1.2 ──► Release 1       │
+│       │                        │         │                           │
+│       │                        └─────────┼────────────────────────►  │
+│       │                                  └────────────────────────►  │
+│       │                                                              │
+│       ├── Epic 2 ──► MVP 2 ──► HU 2.1 ──► HU 2.2 ──► Release 2       │
+│       │                                                              │
+│       └── Epic N ──► MVP N ──► HU N.1 ──► HU N.2 ──► Release N       │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Principles
+
+1. **Incremental Delivery**: Each MVP delivers working software
+2. **HU Isolation**: Each User Story (HU) is implemented independently
+3. **Event-Driven Architecture**: Services communicate via events
+4. **Microservices Boundaries**: Each microservice has clear responsibilities
+5. **Full OpenSpec Cycle**: Each HU goes through complete OpenSpec workflow
+
+---
+
+## Key Concepts
+
+### Artifact Types in OpenSpec
+
+| Artifact | Purpose | File |
+|----------|---------|------|
+| `proposal.md` | WHY - Rationale and high-level scope | `proposal.md` |
+| `specs/*/spec.md` | WHAT - Detailed requirements with scenarios | `specs/<capability>/spec.md` |
+| `design.md` | HOW - Technical decisions and architecture | `design.md` |
+| `tasks.md` | Implementation checklist | `tasks.md` |
+
+### OpenSpec Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/opsx-new <name>` | Create new change |
+| `/opsx-continue <name>` | Continue artifact creation |
+| `/opsx-ff <name>` | Fast-forward all artifacts |
+| `/opsx-apply <name>` | Implement tasks |
+| `/opsx-verify <name>` | Verify implementation |
+| `/opsx-sync <name>` | Sync delta specs to main |
+| `/opsx-archive <name>` | Archive completed change |
+
+---
+
+## Phase 0: Project Initialization
+
+### Objective
+
+Set up the project structure for OpenSpec and prepare the working environment.
+
+### Steps
+
+#### 0.1 Initialize OpenSpec (if not done)
+
+```bash
+openspec init
+```
+
+#### 0.2 Create Project Structure
+
+Create the following directory structure:
+
+```
+openspec/                      # OpenSpec workspace (Option A - raíz)
+├── config.yaml
+├── specs/                     # Main specifications (merged after sync)
+│   └── {capability}/
+│       └── spec.md
+├── changes/
+│   ├── {hu-name}/
+│   │   ├── .openspec.yaml
+│   │   ├── proposal.md
+│   │   ├── design.md
+│   │   ├── tasks.md
+│   │   └── specs/{capability}/spec.md
+│   └── archive/
+
+ai-specs/
+├── specs/
+└── .agents/
+_docs de proyecto/             # Functional specs
+_docs de soporte/              # Architecture docs
+├── architecture-1.solution-architecture.md
+├── architecture-2.webapis-architecture.md
+├── architecture-3.listener-architecture.md
+└── project.md               # Project configuration
+```
+
+#### 0.3 Document Analysis
+
+Read and analyze the base documents:
+
+**Vision.md** contains:
+- Business objectives
+- High-level requirements
+- User personas
+- Success criteria
+
+**architecture-1.solution-architecture.md** contains:
+- Overall solution architecture (ECS, EventBridge, SQS, VPC topology)
+- Transactional Outbox pattern implementation
+- Integration patterns (on-premise ↔ AWS)
+- Resilience and observability considerations
+
+**architecture-2.webapis-architecture.md** contains:
+- Web API microservice structure (Clean Architecture + CQRS)
+- Minimal API layer patterns
+- Outbox pattern for APIs
+- Internal libraries (`LaNacion.Core.Infraestructure.*`)
+
+**architecture-3.listener-architecture.md** contains:
+- SQS Listener microservice structure
+- IHostedService / SqsQueueConsumerService patterns
+- Idempotency handling (MensajesRecibidos)
+- Event processing flow end-to-end
+
+**project.md** contains:
+- Project type and technology stack
+- Architecture foundations
+- Naming conventions
+- Standards reference (API, Listener, Frontend)
+- Agent workflow integration
+
+### Deliverables
+
+- [ ] OpenSpec initialized
+- [ ] Directory structure created
+- [ ] All three documents analyzed (Vision, architecture, project)
+
+---
+
+## Phase 1: Requirements Discovery & Planning
+
+### Objective
+
+Extract requirements from Vision.md, architecture from the architecture docs (`architecture-1/2/3`), and configuration from project.md to create a structured backlog of epicas and MVPs.
+
+### Steps
+
+### 1.1 Create the Planning Change
+
+```bash
+/opsx-new "planning-full-project"
+```
+
+### 1.2 Create Proposal (proposal.md)
+
+Document the project scope and approach:
+
+```markdown
+# Proposal: Full Project Planning
+
+## Why
+
+Transform the business requirements from Vision.md into a structured
+implementation plan following microservices and event-driven architecture
+as defined in architecture-1.solution-architecture.md, architecture-2.webapis-architecture.md
+and architecture-3.listener-architecture.md.
+
+## What Changes
+
+- Extract and structure all requirements
+- Define epicas based on business domains
+- Define MVPs based on delivery value
+- Generate individual HUs for each MVP
+
+## Capabilities
+
+### Planning Capabilities
+
+- **requirements-extraction**: Extract requirements from Vision.md
+- **architecture-analysis**: Analyze architecture-1/2/3 docs for service boundaries
+- **project-configuration**: Apply project.md configuration (standards, naming conventions)
+- **epic-definition**: Define epicas based on domains
+- **mvp-definition**: Define MVPs based on value delivery
+- **hu-generation**: Generate individual user stories
+- **microservices-mapping**: Map HUs to microservices
+
+## Impact
+
+This is a planning-only change that generates the implementation backlog.
+Applies project-specific standards from project.md.
+No production code is affected.
+```
+
+### 1.3 Create Specs (specs/)
+
+#### specs/requirements-extraction/spec.md
+
+```markdown
+## ADDED Requirements
+
+### Requirement: Requirements Extraction
+
+The system SHALL extract all requirements from Vision.md organized by:
+- Functional requirements
+- Non-functional requirements
+- Business rules
+- Integration points
+
+#### Scenario: Extract functional requirements
+
+- **WHEN** analyzing Vision.md
+- **THEN** identify all user-facing features
+- **AND** categorize by domain/bounded context
+- **AND** document acceptance criteria
+
+#### Scenario: Extract non-functional requirements
+
+- **WHEN** analyzing Vision.md
+- **THEN** identify performance requirements
+- **AND** identify security requirements
+- **AND** identify scalability requirements
+
+### Requirement: Requirements Documentation
+
+The system SHALL document extracted requirements in structured format with:
+- Requirement ID (REQ-XX)
+- Description
+- Source section in Vision.md
+- Related requirements
+- Priority (Must/Should/Could)
+
+#### Scenario: Document requirement
+
+- **WHEN** extracting a requirement
+- **THEN** assign unique ID
+- **AND** write clear description
+- **AND** link to source
+- **AND** set priority
+```
+
+#### specs/architecture-analysis/spec.md
+
+```markdown
+## ADDED Requirements
+
+### Requirement: Architecture Analysis
+
+The system SHALL analyze arquitectura.md to identify:
+- Microservices list and responsibilities
+- Event schemas
+- Integration patterns
+- Data ownership boundaries
+
+#### Scenario: Identify microservices
+
+- **WHEN** analyzing arquitectura.md
+- **THEN** list all microservices
+- **AND** define each service's domain
+- **AND** document service boundaries
+- **AND** identify shared data
+
+#### Scenario: Identify event contracts
+
+- **WHEN** analyzing arquitectura.md
+- **THEN** extract event schemas
+- **AND** identify event producers
+- **AND** identify event consumers
+- **AND** document event purposes
+```
+
+#### specs/epic-definition/spec.md
+
+```markdown
+## ADDED Requirements
+
+### Requirement: Epic Definition
+
+The system SHALL group related requirements into epicas based on:
+- Business domain/bounded context
+- Common user journey
+- Shared infrastructure
+- Deployment boundaries
+
+#### Scenario: Create epic from requirements
+
+- **WHEN** grouping requirements
+- **THEN** identify common domain
+- **AND** define epic scope
+- **AND** assign epic ID (EPIC-XX)
+- **AND** write epic description
+- **AND** link related requirements
+```
+
+#### specs/mvp-definition/spec.md
+
+```markdown
+## ADDED Requirements
+
+### Requirement: MVP Definition
+
+The system SHALL define MVPs based on:
+- Value delivery to users
+- Technical dependencies
+- Risk mitigation
+- Fast feedback cycles
+
+#### Scenario: Define MVP scope
+
+- **WHEN** defining MVP for an epic
+- **THEN** identify minimum features for value
+- **AND** consider technical dependencies
+- **AND** define MVP ID (MVP-XX)
+- **AND** write MVP description
+- **AND** list included HUs
+```
+
+#### specs/hu-generation/spec.md
+
+```markdown
+## ADDED Requirements
+
+### Requirement: User Story Generation
+
+The system SHALL generate individual user stories (HUs) for each MVP with:
+- Clear user value
+- Independent implementation
+- Testable acceptance criteria
+- Microservice assignment
+
+#### Scenario: Generate HU from requirement
+
+- **WHEN** creating HU from requirement
+- **THEN** write user story format (As a... I want... so that...)
+- **AND** define acceptance criteria
+- **AND** assign to microservice
+- **AND** link to related events
+- **AND** assign to MVP
+```
+
+#### specs/microservices-mapping/spec.md
+
+```markdown
+## ADDED Requirements
+
+### Requirement: Microservice Assignment
+
+The system SHALL assign each HU to the appropriate microservice based on:
+- Domain ownership
+- Data responsibility
+- Event publishing/consuming role
+- API exposure
+
+#### Scenario: Assign HU to service
+
+- **WHEN** assigning HU to microservice
+- **THEN** identify owning service
+- **AND** identify consumer services
+- **AND** define required events
+- **AND** document API contracts
+```
+
+### 1.4 Create Design (design.md)
+
+```markdown
+# Design: Full Project Planning
+
+## Context
+
+This planning phase transforms Vision.md and arquitectura.md into
+an actionable implementation backlog.
+
+## Goals / Non-Goals
+
+**Goals:**
+- Complete requirements coverage
+- Clear microservices boundaries
+- Independent, testable HUs
+- Logical MVP groupings
+
+**Non-Goals:**
+- Detailed API design (per HU)
+- Database schema design (per HU)
+- Infrastructure provisioning
+- Deployment automation
+
+## Decisions
+
+### Decision 1: Epic Organization
+
+Epicas are organized by business domain/bounded context, aligned with
+microservices from the architecture docs (architecture-1/2/3).
+
+### Decision 2: MVP Prioritization
+
+MVPs are prioritized by:
+1. Core business value
+2. Technical dependencies
+3. Risk early detection
+4. Fastest feedback loop
+
+### Decision 3: HU Independence
+
+Each HU is designed to be implementable without other HUs in the same
+MVP, with proper use of events for eventual consistency.
+
+### Decision 4: Event-First Design
+
+HUs involving state changes must:
+- Define the resulting event
+- Specify event schema
+- Identify consumers
+- Handle eventual consistency
+```
+
+### 1.5 Create Tasks (tasks.md)
+
+```markdown
+# Tasks: Full Project Planning
+
+## 1. Requirements Extraction
+
+- [ ] 1.1 Read and analyze Vision.md
+- [ ] 1.2 Extract functional requirements
+- [ ] 1.3 Extract non-functional requirements
+- [ ] 1.4 Document all requirements with IDs
+
+## 2. Architecture Analysis
+
+- [ ] 2.1 Read and analyze architecture-1/2/3 docs
+- [ ] 2.2 List all microservices
+- [ ] 2.3 Document service responsibilities
+- [ ] 2.4 Extract event schemas
+- [ ] 2.5 Document integration patterns
+
+## 3. Epic Definition
+
+- [ ] 3.1 Group requirements by domain
+- [ ] 3.2 Define epic for each domain
+- [ ] 3.3 Write epic descriptions
+- [ ] 3.4 Link requirements to epicas
+
+## 4. MVP Definition
+
+- [ ] 4.1 Analyze dependencies between requirements
+- [ ] 4.2 Define MVP for each epic
+- [ ] 4.3 Prioritize MVPs
+- [ ] 4.4 Document MVP scope
+
+## 5. HU Generation
+
+- [ ] 5.1 Generate HU for each requirement
+- [ ] 5.2 Write user story format
+- [ ] 5.3 Define acceptance criteria
+- [ ] 5.4 Assign to microservices
+- [ ] 5.5 Assign to MVPs
+
+## 6. Output Generation
+
+- [ ] 6.1 Generate Epic Backlog document
+- [ ] 6.2 Generate MVP Roadmap document
+- [ ] 6.3 Generate HU List per MVP
+- [ ] 6.4 Generate Microservices Assignment matrix
+```
+
+### 1.6 Apply Planning Change
+
+```bash
+# Code is implemented under src/apps/
+# Integration tests go under integration/
+/opsx-apply planning-full-project
+```
+
+### 1.7 Sync and Archive
+
+```bash
+/opsx-sync planning-full-project
+/opsx-archive planning-full-project
+```
+
+### Deliverables
+
+- [ ] Requirements catalog (REQ-XX)
+- [ ] Microservices catalog
+- [ ] Epic backlog
+- [ ] MVP roadmap
+- [ ] HU list per MVP
+- [ ] Microservices assignment matrix
+
+---
+
+## Phase 2: Epic & MVP Definition
+
+### Objective
+
+Based on the planning artifacts, create formal Epic and MVP changes in OpenSpec for documentation and tracking.
+
+### Steps
+
+### 2.1 Create Epic Changes
+
+For each Epic (EPIC-XX), create a change:
+
+```bash
+# Example for Epic 1
+/opsx-new "epic-01-customer-management"
+
+# Content structure:
+# proposal.md - Epic overview
+# specs/ - Business capabilities
+# design.md - Service boundaries
+# tasks.md - MVP breakdown
+```
+
+### 2.2 Epic Proposal Template
+
+```markdown
+# Proposal: Epic 01 - Customer Management
+
+## Why
+
+Manage customer lifecycle across all touchpoints, providing
+a unified view of customer data and enabling personalized
+experiences.
+
+## What Changes
+
+- Customer registration and profile management
+- Customer segmentation
+- Customer preferences handling
+- Cross-service customer data synchronization
+
+## Capabilities
+
+### Core Capabilities
+
+- **customer-registration**: Register new customers
+- **customer-profile**: Manage customer profiles
+- **customer-segmentation**: Segment customers by behavior
+- **customer-preferences**: Handle customer preferences
+
+### Integration Capabilities
+
+- **customer-events**: Publish customer domain events
+- **customer-sync**: Synchronize customer data across services
+
+## Impact
+
+- New microservice: CustomerService
+- Event contracts: CustomerCreated, CustomerUpdated, CustomerDeleted
+- Database: Customer schema
+- API endpoints: /api/customers/*
+```
+
+### 2.3 MVP Definition within Epic
+
+Each Epic contains one or more MVPs:
+
+```markdown
+## MVPs
+
+### MVP 1.1: Core Customer Registration
+
+**Scope:**
+- Customer registration API
+- Basic profile management
+- CustomerCreated event
+
+**HUs:**
+- HU-001: Register customer
+- HU-002: Update customer profile
+- HU-003: Get customer by ID
+
+### MVP 1.2: Customer Events & Sync
+
+**Scope:**
+- CustomerUpdated event
+- CustomerDeleted event
+- Event consumers in other services
+
+**HUs:**
+- HU-004: Publish customer updates
+- HU-005: Handle customer events in OrderService
+```
+
+### Deliverables
+
+- [ ] Epic 01 change with proposal, specs, design, tasks
+- [ ] Epic 02 change (repeat per epic)
+- [ ] ...
+- [ ] Epic NN change
+
+---
+
+## Phase 3: User Story Generation
+
+### Objective
+
+Create individual OpenSpec changes for each HU (User Story) following the standard workflow.
+
+### Steps
+
+### 3.1 HU Change Creation Workflow
+
+For each HU from the planning phase:
+
+```bash
+# Step 1: Create the change
+/opsx-new "hu-001-register-customer"
+
+# Step 2: Fast-forward artifacts
+/opsx-ff hu-001-register-customer
+
+# Or step-by-step:
+# Step 2a: Create proposal
+/opsx-continue hu-001-register-customer
+
+# Step 2b: Create specs
+/opsx-continue hu-001-register-customer
+
+# Step 2c: Create design
+/opsx-continue hu-001-register-customer
+
+# Step 2d: Create tasks
+/opsx-continue hu-001-register-customer
+```
+
+### 3.2 HU Proposal Template
+
+```markdown
+# Proposal: HU-001 - Register Customer
+
+## Why
+
+Allow new customers to register in the system with basic
+information to enable subsequent purchasing and personalization.
+
+**Source:** Vision.md - Section 3.1 Customer Registration
+**Priority:** Must Have
+**MVP:** MVP 1.1 - Core Customer Registration
+**Epic:** EPIC-01 - Customer Management
+
+## What Changes
+
+- New POST /api/customers endpoint
+- Customer entity creation
+- CustomerCreated event publishing
+- Basic validation
+
+## Capabilities
+
+### New Capabilities
+
+- **customer-registration**: Register a new customer with email and password
+
+### Modified Capabilities
+
+- None
+
+## Impact
+
+- **Service:** CustomerService
+- **Endpoint:** POST /api/customers
+- **Database:** customers table
+- **Event Published:** CustomerCreated
+- **Consumers:** OrderService (future)
+```
+
+### 3.3 HU Specs Template
+
+```markdown
+## ADDED Requirements
+
+### Requirement: Customer Registration
+
+The system SHALL allow registering a new customer with the following information:
+- Email (required, unique, valid format)
+- Password (required, minimum 8 characters)
+- First name (required)
+- Last name (required)
+- Phone number (optional)
+
+#### Scenario: Successful registration
+
+- **WHEN** customer submits valid registration data
+- **THEN** create customer record in database
+- **AND** hash password before storage
+- **AND** publish CustomerCreated event
+- **AND** return 201 Created with customer ID
+
+#### Scenario: Duplicate email
+
+- **WHEN** customer submits registration with existing email
+- **THEN** return 409 Conflict
+- **AND** include error message "Email already registered"
+
+#### Scenario: Invalid email format
+
+- **WHEN** customer submits registration with invalid email
+- **THEN** return 400 Bad Request
+- **AND** include validation error
+
+### Requirement: Password Security
+
+The system SHALL securely handle customer passwords by:
+- Hashing passwords using bcrypt
+- Never returning password in responses
+- Enforcing minimum security requirements
+
+#### Scenario: Password hashing
+
+- **WHEN** customer registers
+- **THEN** hash password with bcrypt (cost factor 12)
+- **AND** store only the hash
+- **AND** never log or return plaintext password
+```
+
+### 3.4 HU Design Template
+
+```markdown
+# Design: HU-001 - Register Customer
+
+## Context
+
+Implementing customer registration in the CustomerService following
+the microservice architecture defined in architecture-1/2/3 docs.
+
+## Goals / Non-Goals
+
+**Goals:**
+- RESTful API endpoint
+- Domain-driven design
+- Event publishing
+- Input validation
+
+**Non-Goals:**
+- Email verification (MVP 1.2)
+- Social login (future)
+- Password reset (future)
+
+## Decisions
+
+### Decision 1: API Design
+
+Following REST conventions:
+- POST /api/customers for creation
+- 201 Created for success
+- 409 Conflict for duplicates
+- 400 Bad Request for validation errors
+
+### Decision 2: Command Structure
+
+Using CQRS pattern:
+- Command: CreateCustomerCommand
+- Handler: CreateCustomerHandler
+- Validator: CreateCustomerValidator
+
+### Decision 3: Event Schema
+
+```json
+{
+  "eventType": "CustomerCreated",
+  "version": "1.0",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": {
+    "customerId": "uuid",
+    "email": "customer@example.com",
+    "firstName": "John",
+    "lastName": "Doe"
+  }
+}
+```
+
+### Decision 4: Database Schema
+
+```sql
+CREATE TABLE customers (
+    id UUID PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+```
+
+### 3.5 HU Tasks Template
+
+```markdown
+# Tasks: HU-001 - Register Customer
+
+## 1. Domain Layer
+
+- [ ] 1.1 Create Customer entity in Domain project
+- [ ] 1.2 Add validation attributes
+- [ ] 1.3 Create CustomerCreated domain event
+
+## 2. Application Layer
+
+- [ ] 2.1 Create CreateCustomerCommand
+- [ ] 2.2 Create CreateCustomerValidator
+- [ ] 2.3 Create CreateCustomerHandler
+- [ ] 2.4 Create ICustomerRepository interface
+
+## 3. Infrastructure Layer
+
+- [ ] 3.1 Create CustomerRepository using Dapper
+- [ ] 3.2 Implement outbox pattern for events
+- [ ] 3.3 Add database migrations
+
+## 4. API Layer
+
+- [ ] 4.1 Create POST /api/customers endpoint
+- [ ] 4.2 Add request/response DTOs
+- [ ] 4.3 Map command to handler
+- [ ] 4.4 Add exception handling
+
+## 5. Testing
+
+- [ ] 5.1 Unit tests for CreateCustomerValidator
+- [ ] 5.2 Unit tests for CreateCustomerHandler
+- [ ] 5.3 Integration test for endpoint
+
+## 6. Documentation
+
+- [ ] 6.1 Update OpenAPI spec
+- [ ] 6.2 Add API documentation
+```
+
+### Deliverables
+
+- [ ] HU-001 change with all artifacts
+- [ ] HU-002 change with all artifacts
+- [ ] HU-003 change with all artifacts
+- [ ] ... (per HU in the backlog)
+
+---
+
+## Phase 4: Individual HU Implementation
+
+### Objective
+
+Implement each HU following the full OpenSpec workflow: Apply -> Verify -> Sync -> Archive.
+
+### Steps
+
+### 4.1 Apply Implementation
+
+```bash
+# For each HU change:
+/opsx-apply hu-001-register-customer
+```
+
+The `/opsx-apply` command will:
+1. Read all artifacts (proposal, specs, design, tasks)
+2. Execute each task sequentially
+3. Mark tasks complete as they finish
+4. Report progress
+
+### 4.2 Verify Implementation
+
+```bash
+/opsx-verify hu-001-register-customer
+```
+
+The `/opsx-verify` command will:
+1. Check task completion
+2. Verify spec coverage
+3. Check design adherence
+4. Report issues (CRITICAL/WARNING/SUGGESTION)
+
+### 4.3 Sync Delta Specs
+
+```bash
+/opsx-sync hu-001-register-customer
+```
+
+The `/opsx-sync` command will:
+1. Read delta specs from the change
+2. Merge into main specs (`openspec/specs/`)
+3. Add new requirements
+4. Update existing requirements
+
+### 4.4 Archive Change
+
+```bash
+/opsx-archive hu-001-register-customer
+```
+
+The `/opsx-archive` command will:
+1. Move change from `openspec/changes/` to `openspec/changes/archive/`
+2. Preserve decision history
+3. Keep artifacts for future reference
+
+### Implementation Flow Diagram
+
+```
++-------------------------------------------------------------------+
+|                    HU IMPLEMENTATION CYCLE                        |
++-------------------------------------------------------------------+
+|                                                                   |
+|  +--------------+                                                 |
+|  | HU Change    |                                                 |
+|  | (proposal,   |                                                 |
+|  |  specs,      |                                                 |
+|  |  design,     |                                                 |
+|  |  tasks)      |                                                 |
+|  +------+-------+                                                 |
+|         |                                                         |
+|         v                                                         |
+|  +-----------------------------------+                            |
+|  |  /opsx-apply hu-XXX               |                            |
+|  |                                   |                            |
+|  |  - Execute Task 1 -> [x]          |                            |
+|  |  - Execute Task 2 -> [x]          |                            |
+|  |  - Execute Task 3 -> [x]          |                            |
+|  +-----------------------------------+                            |
+|                            |                                      |
+|                            v                                      |
+|  +--------------+                                                 |
+|  |  /opsx-verify|   -> Completeness / Correctness / Coherence     |
+|  +--------------+                                                 |
+|         |                                                         |
+|         v                                                         |
+|  +--------------+                                                 |
+|  |  /opsx-sync  |   -> Delta specs -> Main specs                  |
+|  +--------------+                                                 |
+|         |                                                         |
+|         v                                                         |
+|  +--------------+                                                 |
+|  | /opsx-archive|   -> Archive with decision history              |
+|  +--------------+                                                 |
+|                                                                   |
++-------------------------------------------------------------------+
+```
+
+### Deliverables
+
+- [ ] Code implemented for each task
+- [ ] Tests written and passing
+- [ ] Verification passed
+- [ ] Specs synced to main
+- [ ] Change archived
+
+---
+
+## Phase 5: Integration & Release
+
+### Objective
+
+Integrate completed HUs into MVPs and release incrementally.
+
+### Steps
+
+### 5.1 MVP Integration Testing
+
+After all HUs in an MVP are complete:
+
+```bash
+# Create integration test change
+/opsx-new "mvp-1.1-integration-tests"
+
+# Define integration tests covering all HU interactions
+```
+
+### 5.2 Event Contract Testing
+
+For microservices communicating via events:
+
+```markdown
+## ADDED Requirements
+
+### Requirement: Event Contract Validation
+
+The system SHALL validate event contracts between services by:
+- Verifying event schema compatibility
+- Testing event publishing
+- Testing event consumption
+- Validating schema evolution
+
+#### Scenario: CustomerCreated event
+
+- **WHEN** CustomerService publishes CustomerCreated
+- **THEN** OrderService can consume and deserialize
+- **AND** data integrity is maintained
+```
+
+### 5.3 MVP Release Change
+
+```bash
+/opsx-new "mvp-1.1-release"
+```
+
+### 5.4 Release Checklist
+
+```markdown
+# Release Checklist: MVP 1.1
+
+## Prerequisites
+
+- [ ] All HUs in MVP implemented
+- [ ] All HUs verified and archived
+- [ ] Integration tests passing
+- [ ] Event contract tests passing
+- [ ] Code review completed
+
+## Deployment
+
+- [ ] Infrastructure provisioned
+- [ ] Database migrations executed
+- [ ] Service deployed to environment
+- [ ] Health checks passing
+
+## Validation
+
+- [ ] Smoke tests passing
+- [ ] Integration tests passing
+- [ ] Monitoring dashboards configured
+```
+
+---
+
+## Command Reference
+
+### OpenSpec CLI Commands
+
+```bash
+# Initialization
+openspec init                    # Initialize OpenSpec in project
+openspec status                  # Show overall status
+openspec status --change <name>  # Show change status
+openspec list                    # List all changes
+openspec list --json             # List changes as JSON
+
+# Change Management
+openspec new change "<name>"     # Create new change
+openspec new change "<name>" --schema <schema>  # With specific schema
+
+# Artifact Workflow
+openspec instructions <artifact-id> --change "<name>"  # Get artifact instructions
+openspec instructions <artifact-id> --change "<name>" --json  # As JSON
+
+# Workflow Commands
+openspec continue <name>        # Continue artifact creation (step-by-step)
+openspec ff <name>               # Fast-forward all artifacts
+openspec apply <name>            # Implement tasks
+openspec verify <name>           # Verify implementation
+openspec sync <name>             # Sync delta specs to main
+openspec archive <name>          # Archive completed change
+
+# Bulk Operations
+openspec archive --all           # Archive all completed changes
+openspec bulk-archive            # Interactive bulk archive
+```
+
+### OpenSpec Slash Commands (in AI Chat)
+
+| Command | Description |
+|---------|-------------|
+| `/opsx-onboard` | Guided onboarding tutorial |
+| `/opsx-new <name>` | Start new change |
+| `/opsx-explore` | Explore mode (think before doing) |
+| `/opsx-continue <name>` | Continue artifact creation |
+| `/opsx-ff <name>` | Fast-forward all artifacts |
+| `/opsx-apply <name>` | Implement tasks |
+| `/opsx-verify <name>` | Verify implementation |
+| `/opsx-sync <name>` | Sync delta specs |
+| `/opsx-archive <name>` | Archive change |
+| `/opsx-bulk-archive` | Bulk archive |
+
+### Workflow by Phase
+
+```bash
+# Phase 0: Initialize
+openspec init
+
+# Phase 1: Planning
+/opsx-new "planning-full-project"
+/opsx-ff "planning-full-project"
+/opsx-apply "planning-full-project"
+/opsx-sync "planning-full-project"
+/opsx-archive "planning-full-project"
+
+# Phase 2: Epics
+/opsx-new "epic-01-customer-management"
+# ... (repeat per epic)
+
+# Phase 3: HUs
+/opsx-new "hu-001-register-customer"
+/opsx-ff "hu-001-register-customer"
+/plan-backend-ticket hu-001-register-customer
+# → Creates openspec/changes/hu-001-register-customer/hu-001-register-customer_backend.md
+
+# Phase 4: Implementation (code lands in src/apps/)
+implement-backend-plan @hu-001-register-customer_backend.md
+/opsx-verify "hu-001-register-customer"
+/opsx-sync "hu-001-register-customer"
+/opsx-archive "hu-001-register-customer"
+
+# Repeat Phase 4 for each HU
+```
+
+---
+
+## Template Examples
+
+### A. Complete Epic Change Structure
+
+```
+openspec/changes/epic-01-customer-management/
++-- .openspec.yaml
++-- proposal.md
++-- design.md
++-- tasks.md
++-- specs/
+    +-- customer-registration/
+    |   +-- spec.md
+    +-- customer-profile/
+    |   +-- spec.md
+    +-- customer-segmentation/
+    |   +-- spec.md
+    +-- customer-events/
+        +-- spec.md
+```
+
+### B. Complete HU Change Structure
+
+```
+openspec/changes/hu-001-register-customer/
++-- .openspec.yaml
++-- proposal.md
++-- design.md
++-- tasks.md
++-- specs/
+    +-- customer-registration/
+        +-- spec.md
+```
+
+### C. Main Specs Structure (after sync)
+
+```
+openspec/specs/
++-- customer/
+|   +-- purpose.md
+|   +-- spec.md          # Merged from all HU changes
++-- order/
+|   +-- purpose.md
+|   +-- spec.md
++-- payment/
+|   +-- purpose.md
+|   +-- spec.md
++-- notification/
+    +-- purpose.md
+    +-- spec.md
+```
+
+---
+
+## Best Practices
+
+### 1. Small, Independent HUs
+
+Each HU should:
+- Be implementable by one developer
+- Complete within 1-3 days
+- Have clear value delivery
+- Be independently testable
+
+### 2. Event-First Design
+
+When designing HUs:
+- Always consider the resulting event
+- Define event schema upfront
+- Identify potential consumers
+- Plan for eventual consistency
+
+### 3. Microservice Boundaries
+
+Respect microservice boundaries:
+- Each HU belongs to one microservice
+- Cross-service communication via events
+- Shared data through events, not databases
+- API contracts defined per HU
+
+### 4. Incremental Architecture
+
+Don't over-engineer:
+- Start with simplest solution
+- Add complexity only when needed
+- Refactor between MVPs
+- Evolve architecture based on feedback
+
+### 5. Documentation
+
+Keep documentation current:
+- Sync specs after each HU
+- Update architecture docs per Epic
+- Archive completed changes
+- Maintain decision log
+
+---
+
+## Troubleshooting
+
+### "No changes available"
+
+```bash
+openspec list
+# Verify the change exists
+openssl status --change <name>
+```
+
+### "Artifact dependencies not met"
+
+```bash
+openspec status --change <name> --json
+# Check which artifacts are blocking
+# Create missing artifacts first
+```
+
+### "Tasks not progressing"
+
+Ensure you have read the tasks.md file completely before starting. Each task should be clear before implementation.
+
+### "Verification failures"
+
+Run `/opsx-verify` and address:
+1. CRITICAL issues first (must fix)
+2. WARNING issues (should fix)
+3. SUGGESTION issues (nice to fix)
+
+---
+
+## Summary
+
+This workflow enables:
+
+1. **Structured Planning**: Extract requirements from Vision.md into epicas and MVPs
+2. **Architecture Alignment**: Follow Microservices + Event-Driven from architecture-1/2/3 docs
+3. **Project Integration**: Applystandards and conventions from project.md
+4. **Incremental Delivery**: Implement HU by HU, no big bang
+5. **Full Traceability**: Every requirement traced from Vision -> Epic -> MVP -> HU -> Implementation
+6. **Preserved Decisions**: All artifacts archived for future reference
+
+### Document Flow
+
+```
+Vision.md (negocio)
+     │
+     ▼
+architecture-1/2/3.*.md (técnica - microservicios/eventos)
+     │
+     ▼
+project.md (configuración - estándares/conventions)
+     │
+     ▼
+openspec-large-project-planning → Planning Output
+```
+
+### Quick Start Commands
+
+```bash
+# 1. Initialize
+openspec init
+
+# 2. Analyze documents (Vision + arquitectura + project)
+#    The skill reads all three documents
+
+# 3. Create planning change
+/opsx-new "planning-full-project"
+/opsx-ff "planning-full-project"
+
+# 4. Generate backlog (applies project.md conventions)
+
+# 5. For each HU:
+/opsx-new "hu-XXX-description"
+/opsx-ff "hu-XXX-description"
+/opsx-apply "hu-XXX-description"
+/opsx-verify "hu-XXX-description"
+/opsx-sync "hu-XXX-description"
+/opsx-archive "hu-XXX-description"
+
+# 6. Release each MVP
+```
+
+---
+
+## Document Integration (project.md)
+
+When project.md exists, the workflow applies:
+
+| Element | Source |
+|---------|--------|
+| Technology stack | project.md |
+| Standards (API/Listener/Frontend) | project.md |
+| Naming conventions | project.md |
+| Architecture patterns | project.md |
+| Agent workflow | project.md |
+
+**Files to replicate:**
+```
+D:\Repo\suscripciones-specs\
+├── project.md                              # Project configuration
+├── OPENSPEC-LARGE-PROJECT-WORKFLOW.md      # This guide
+├── src/                                    # Source code (Nx monorepo)
+│   ├── apps/
+│   └── libs/
+├── integration/                            # Integration tests
+├── openspec/                               # OpenSpec workspace
+├── _docs de proyecto/
+├── _docs de soporte/
+│   ├── architecture-1.solution-architecture.md
+│   ├── architecture-2.webapis-architecture.md
+│   └── architecture-3.listener-architecture.md
+└── .opencode/
+    ├── skills/
+    │   └── openspec-large-project-planning/
+    │       └── SKILL.md
+    └── command/
+        └── plan-large-project.md
+```
+
+---
+
+*Document Version: 1.2*
+*Last Updated: April 24, 2026 - Consolidated with /opsx-* commands*

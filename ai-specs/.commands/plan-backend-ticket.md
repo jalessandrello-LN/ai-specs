@@ -12,7 +12,7 @@ Obtain a step-by-step plan for a Azure DevOps ticket that is ready to start impl
 
 # Process and rules
 
-1. Adopt the role of `.claude/agents/lanacion-backend-planner.md`
+1. Adopt the role of `ai-specs/.agents/lanacion-backend-planner.md` (or the equivalent tool-specific mirror)
 1. Analyze the Azure DevOps ticket mentioned in #ticket using the MCP. If the mention is a local file, then avoid using MCP
 2. Propose a step-by-step plan for the backend part, taking into account everything mentioned in the ticket and applying the project’s best practices and rules you can find in  `/ai-specs/specs`. 
 3. Apply the best practices of your role to ensure the developer can be fully autonomous and implement the ticket end-to-end using only your plan. 
@@ -31,6 +31,10 @@ Follow this template:
 
 ### 2. **Overview**
 - Brief description of the feature and architecture principles (DDD, clean architecture)
+- MUST include:
+  - `**Backend Type**: API|Listener`
+  - `**Template**: LaNacion.Core.Templates.Web.Api.Minimal|ln-SQSlstnr`
+  - `**Standards**: ai-specs/specs/ln-susc-api-standards.mdc|ai-specs/specs/ln-susc-listener-standards.mdc`
 
 ### 3. **Architecture Context**
 - Layers involved (Domain, Application, Presentation)
@@ -41,7 +45,9 @@ Detailed steps, typically:
 
 #### **Step 0: Create Feature Branch**
 - **Action**: Create and switch to a new feature branch following the development workflow. Check if it exists and if not, create it
-- **Branch Naming**: Follow the project's branch naming convention (`feature/[ticket-id]-backend`, make it required to use this naming, don't allow to keep on the general task [ticket-id] if it exists to separate concerns)
+- **Branch Naming**: Must reflect backend type:
+  - API: `feature/[TICKET-ID]-api`
+  - Listener: `feature/[TICKET-ID]-listener`
 - **Implementation Steps**:
   1. Ensure you're on the latest `main` or `develop` branch (or appropriate base branch)
   2. Pull latest changes: `git pull origin [base-branch]`

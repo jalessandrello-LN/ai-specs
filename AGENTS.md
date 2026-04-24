@@ -28,12 +28,16 @@ All agents follow the base development standards defined in:
 
 **Output**: Generates `ai-specs/changes/[TICKET-ID]_backend.md` with complete implementation plan
 
+**Data Model Reference**: `ai-specs/specs/data-model.md` - Domain entities for La Nacion Suscripciones
+
 ### 3. API Developer (La Nación)
 **File**: `ai-specs/.agents/lanacion-api-developer.md`  
 **Purpose**: Implements REST APIs using LaNacion.Core.Templates.Web.Api.Minimal  
 **Technology**: .NET 6, ASP.NET Core Minimal APIs, MediatR, Dapper  
 **Architecture**: Clean Architecture + CQRS + Event Publishing (Outbox Pattern)  
 **Standards**: `ai-specs/specs/ln-susc-api-standards.mdc`
+**API Spec**: `ai-specs/specs/api-spec.yml`
+**Data Model**: `ai-specs/specs/data-model.md`
 
 **When to use**: To implement HTTP REST endpoints that modify or query state  
 **Command**: `/develop-backend @[TICKET-ID]_backend.md` (when plan references API standards)
@@ -255,6 +259,34 @@ For advanced scenarios, use specialized commands in `ai-specs/.commands/lanacion
 - `/integrate-wcf-service` - Integrate legacy WCF service
 
 See `ai-specs/.commands/lanacion/README.md` for detailed documentation.
+
+## Large Project Planning
+
+For starting new large projects with Vision.md and arquitectura.md, use the OpenSpec planning workflow:
+
+### Command: `/plan-large-project`
+
+**Purpose**: Execute complete project planning from requirements documents
+
+**Workflow**:
+```
+1. Analyze Vision.md + arquitectura.md
+2. Create "planning-full-project" change
+3. Generate Epic Backlog, MVP Roadmap, HU List
+4. Scaffold individual HU changes
+5. Sync and archive
+```
+
+**Output**:
+- `planning-full-project/` - Planning artifacts
+- `epic-backlog.md` - All epicas
+- `mvp-roadmap.md` - Release schedule
+- `hu-list.md` - Complete HU backlog
+- `hu-XXX-[slug]/` - Individual HU change scaffolds
+
+**When to use**: Starting a new large project with microservices architecture
+
+**See**: `OPENSPEC-LARGE-PROJECT-WORKFLOW.md` for detailed documentation
 
 ## Standards Reference
 

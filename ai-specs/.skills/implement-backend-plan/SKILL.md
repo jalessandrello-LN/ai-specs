@@ -43,7 +43,8 @@ This skill **orchestrates execution** while adopting the technical expertise of:
    
    Extract:
    - Backend Type (API or Listener)
-   - Standards Reference (ln-susc-api-standards.mdc or ln-susc-listener-standards.mdc)
+   - Template (LaNacion.Core.Templates.Web.Api.Minimal or ln-SQSlstnr)
+   - Standards / Standards Reference (ln-susc-api-standards.mdc or ln-susc-listener-standards.mdc)
    - Branch name
    - All implementation steps (Step 0 through Step N)
    - Testing requirements
@@ -58,17 +59,23 @@ This skill **orchestrates execution** while adopting the technical expertise of:
 
 2. **Auto-select agent role**
 
-   Based on the Standards Reference in the plan:
-   
-   - If references `ln-susc-api-standards.mdc`:
-     - Adopt role: **lanacion-api-developer**
-     - Load API-specific patterns and conventions
-     - Prepare for REST API implementation
-   
-   - If references `ln-susc-listener-standards.mdc`:
-     - Adopt role: **lanacion-lstnr-developer**
-     - Load Listener-specific patterns and conventions
-     - Prepare for SQS event processing implementation
+   Determine backend type using the most explicit signals first (do not guess):
+
+   1. **Backend Type** field (preferred)
+      - `**Backend Type**: API` → Adopt role: **lanacion-api-developer**
+      - `**Backend Type**: Listener` → Adopt role: **lanacion-lstnr-developer**
+
+   2. **Template** field (fallback)
+      - `LaNacion.Core.Templates.Web.Api.Minimal` → API → **lanacion-api-developer**
+      - `ln-SQSlstnr` → Listener → **lanacion-lstnr-developer**
+
+   3. **Standards / Standards Reference** (fallback)
+      - `ln-susc-api-standards.mdc` → API → **lanacion-api-developer**
+      - `ln-susc-listener-standards.mdc` → Listener → **lanacion-lstnr-developer**
+
+   **Validation**:
+   - If multiple signals exist but conflict (e.g., Backend Type says API but Standards reference Listener), **STOP** and report the mismatch.
+   - If none of the signals are present, **STOP** and ask to regenerate the plan with explicit Backend Type/Template/Standards.
 
    Announce: "Adopting role: [agent-name] for [API|Listener] implementation"
 
@@ -153,7 +160,7 @@ This skill **orchestrates execution** while adopting the technical expertise of:
    - Suggest fixes based on error type
    - Wait for user guidance
 
-7. **Run tests (Step 10)**
+7. **Run tests**
 
    Execute the test suite:
 
@@ -176,7 +183,7 @@ This skill **orchestrates execution** while adopting the technical expertise of:
    - Suggest fixes
    - Wait for user guidance
 
-8. **Update documentation (Step 11)**
+8. **Update documentation**
 
    Based on plan requirements, update:
 

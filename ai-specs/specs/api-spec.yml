@@ -1,37 +1,45 @@
 openapi: 3.0.0
 info:
-  title: LTI (Learning Technology Initiative) API
+  title: La Nacion Suscripciones API
   description: |
-    REST API for the Learning Technology Initiative platform, designed for managing candidates, positions, interviews, and recruitment processes.
+    REST API for La Nacion subscription management system.
     
-    This API follows Domain-Driven Design principles and implements a layered architecture for scalable recruitment management.
+    This API follows Clean Architecture, CQRS, and Event-Driven Design principles for managing customer subscriptions, plans, billing, and payments.
     
     ## Features
-    - Candidate management with education and work experience tracking
-    - Position management with company and interview flow integration
-    - Application tracking through interview processes
-    - File upload capabilities for resumes and documents
-    - Comprehensive filtering, sorting, and pagination support
+    - Customer (Cliente) management with addresses and payment methods
+    - Plan management with benefits and pricing
+    - Subscription lifecycle management (create, pause, cancel, renew)
+    - Product association with subscriptions
+    - Invoice and payment processing
+    - Discount coupon system
+    - Event publishing for downstream systems
     
-  version: 0.0.0.001
+    ## Architecture
+    - Clean Architecture: Domain -> Application -> Infrastructure -> Presentation
+    - CQRS: Commands (writes) and Queries (reads) separation
+    - Event-Driven: Outbox Pattern for reliable event publishing
+    - Domain Events: `evt-{squad}-{entity}-{verb-past}`
+    
+  version: 1.0.0
   contact:
-    name: LTI Development Team
+    name: Suscripciones Development Team
   license:
-    name: ISC
-    
+    name: Proprietary
+
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:5000
     description: Development server
-  - url: https://api.lti.dev
+  - url: https://api.suscripciones.lanacion.com.ar
     description: Production server
 
 paths:
-  /candidates:
+  /api/v1/clientes:
     get:
-      summary: Get all candidates
-      description: Retrieve a paginated list of candidates with optional filtering and sorting capabilities
+      summary: Get all customers
+      description: Retrieve a paginated list of customers with optional filtering
       tags:
-        - Candidates
+        - Clientes
       parameters:
         - in: query
           name: page
@@ -39,1038 +47,1141 @@ paths:
             type: integer
             minimum: 1
             default: 1
-          description: Page number for pagination
+          description: Page number
         - in: query
           name: limit
           schema:
             type: integer
             minimum: 1
             maximum: 100
-            default: 10
-          description: Number of candidates per page
+            default: 20
+          description: Items per page
         - in: query
-          name: search
+          name: estado
           schema:
             type: string
-          description: Search term to filter candidates by first name, last name, or email
-        - in: query
-          name: sort
-          schema:
-            type: string
-            enum: [firstName, lastName, email]
-            default: firstName
-          description: Field to sort candidates by
-        - in: query
-          name: order
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: asc
-          description: Sort order
+            enum: [Activo, Inactivo, Suspendido]
+          description: Filter by customer status
       responses:
         '200':
-          description: Successfully retrieved candidates
+          description: Successfully retrieved customers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CandidateListResponse'
+                $ref: '#/components/schemas/ClienteListResponse'
         '400':
           description: Invalid request parameters
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
+
     post:
-      summary: Create a new candidate
-      description: Add a new candidate to the system with their personal information, education, and work experience
+      summary: Create a new customer
+      description: Register a new customer in the system
       tags:
-        - Candidates
+        - Clientes
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateCandidateRequest'
+              $ref: '#/components/schemas/CreateClienteRequest'
       responses:
         '201':
-          description: Candidate created successfully
+          description: Customer created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateCandidateResponse'
-        '400':
-          description: Validation error or email already exists
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /candidates/{id}:
-    get:
-      summary: Get candidate by ID
-      description: Retrieve detailed information about a specific candidate including their applications, interviews, and related data
-      tags:
-        - Candidates
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Candidate ID
-      responses:
-        '200':
-          description: Successfully retrieved candidate
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CandidateDetails'
-        '400':
-          description: Invalid ID format
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Candidate not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
-    put:
-      summary: Update candidate interview stage
-      description: Update the current interview stage for a candidate's application
-      tags:
-        - Candidates
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Candidate ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateCandidateStageRequest'
-      responses:
-        '200':
-          description: Candidate stage updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateCandidateStageResponse'
+                $ref: '#/components/schemas/ClienteResponse'
         '400':
           description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Application not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
+
+  /api/v1/clientes/{id}:
+    get:
+      summary: Get customer by ID
+      description: Retrieve detailed information about a specific customer
+      tags:
+        - Clientes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Customer ID (GUID)
+      responses:
+        '200':
+          description: Successfully retrieved customer
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ClienteDetailsResponse'
+        '404':
+          description: Customer not found
+        '500':
+          description: Internal server error
 
-  /positions:
+  /api/v1/planes:
     get:
-      summary: Get all positions
-      description: Retrieve all visible positions in the system
+      summary: Get all active plans
+      description: Retrieve all plans available for subscription
       tags:
-        - Positions
+        - Planes
+      parameters:
+        - in: query
+          name: esDigital
+          schema:
+            type: boolean
+          description: Filter by digital-only plans
       responses:
         '200':
-          description: Successfully retrieved positions
+          description: Successfully retrieved plans
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Position'
+                  $ref: '#/components/schemas/PlanResponse'
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
-  /positions/{id}:
-    get:
-      summary: Get position by ID
-      description: Retrieve detailed information about a specific position
+    post:
+      summary: Create a new plan
+      description: Create a new subscription plan
       tags:
-        - Positions
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Position ID
-      responses:
-        '200':
-          description: Successfully retrieved position
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Position'
-        '400':
-          description: Invalid position ID format
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Position not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
-    put:
-      summary: Update position
-      description: |
-        Update an existing position with new information. Supports partial updates - only fields provided in the request body will be updated.
-        Fields not provided will maintain their existing values in the database.
-      tags:
-        - Positions
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Position ID
+        - Planes
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePositionRequest'
+              $ref: '#/components/schemas/CreatePlanRequest'
       responses:
-        '200':
-          description: Position updated successfully
+        '201':
+          description: Plan created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UpdatePositionResponse'
+                $ref: '#/components/schemas/PlanResponse'
         '400':
-          description: Validation error or invalid reference data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Position not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          description: Validation error
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
-  /positions/{id}/candidates:
+  /api/v1/suscripciones:
     get:
-      summary: Get candidates by position
-      description: Retrieve all candidates who have applied to a specific position with their interview progress
+      summary: Get subscriptions
+      description: Retrieve subscriptions with optional filters
       tags:
-        - Positions
+        - Suscripciones
       parameters:
-        - in: path
-          name: id
-          required: true
+        - in: query
+          name: clienteId
+          schema:
+            type: string
+            format: uuid
+          description: Filter by customer ID
+        - in: query
+          name: estado
+          schema:
+            type: string
+            enum: [Pendiente, Activa, Pausada, Cancelada, Vencida]
+          description: Filter by subscription status
+        - in: query
+          name: page
           schema:
             type: integer
-          description: Position ID
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+          description: Items per page
       responses:
         '200':
-          description: Successfully retrieved candidates for position
+          description: Successfully retrieved subscriptions
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PositionCandidate'
+                $ref: '#/components/schemas/SuscripcionListResponse'
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
-  /positions/{id}/candidates/names:
-    get:
-      summary: Get candidate names by position
-      description: Retrieve simplified candidate information (ID and name only) for a specific position
-      tags:
-        - Positions
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Position ID
-      responses:
-        '200':
-          description: Successfully retrieved candidate names
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CandidateName'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /positions/{id}/interviewflow:
-    get:
-      summary: Get interview flow by position
-      description: Retrieve the interview flow configuration for a specific position
-      tags:
-        - Positions
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: integer
-          description: Position ID
-      responses:
-        '200':
-          description: Successfully retrieved interview flow
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InterviewFlowResponse'
-        '404':
-          description: Position not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /upload:
     post:
-      summary: Upload file
-      description: Upload a file (PDF or DOCX) for resume or document storage
+      summary: Create a new subscription
+      description: Create a subscription for a customer to a specific plan
       tags:
-        - File Upload
+        - Suscripciones
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSuscripcionRequest'
+      responses:
+        '201':
+          description: Subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuscripcionResponse'
+        '400':
+          description: Validation error
+        '500':
+          description: Internal server error
+
+  /api/v1/suscripciones/{id}:
+    get:
+      summary: Get subscription by ID
+      description: Retrieve detailed subscription information
+      tags:
+        - Suscripciones
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Subscription ID
+      responses:
+        '200':
+          description: Successfully retrieved subscription
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuscripcionDetailsResponse'
+        '404':
+          description: Subscription not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update subscription
+      description: Update subscription details or status
+      tags:
+        - Suscripciones
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Subscription ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSuscripcionRequest'
+      responses:
+        '200':
+          description: Subscription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuscripcionResponse'
+        '400':
+          description: Validation error
+        '404':
+          description: Subscription not found
+        '500':
+          description: Internal server error
+
+  /api/v1/suscripciones/{id}/pausar:
+    post:
+      summary: Pause subscription
+      description: Temporarily pause an active subscription
+      tags:
+        - Suscripciones
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Subscription ID
+      responses:
+        '200':
+          description: Subscription paused successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuscripcionResponse'
+        '400':
+          description: Subscription cannot be paused
+        '404':
+          description: Subscription not found
+        '500':
+          description: Internal server error
+
+  /api/v1/suscripciones/{id}/cancelar:
+    post:
+      summary: Cancel subscription
+      description: Cancel an active or paused subscription
+      tags:
+        - Suscripciones
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Subscription ID
+      requestBody:
+        required: false
+        content:
+          application/json:
             schema:
               type: object
               properties:
-                file:
+                motivo:
                   type: string
-                  format: binary
-                  description: File to upload (PDF or DOCX, max 10MB)
-              required:
-                - file
+                  maxLength: 500
+                  description: Cancellation reason
       responses:
         '200':
-          description: File uploaded successfully
+          description: Subscription cancelled successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileUploadResponse'
+                $ref: '#/components/schemas/SuscripcionResponse'
         '400':
-          description: Invalid file type or file too large
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          description: Subscription cannot be cancelled
+        '404':
+          description: Subscription not found
         '500':
-          description: Upload error
+          description: Internal server error
+
+  /api/v1/facturas:
+    get:
+      summary: Get invoices
+      description: Retrieve invoices with optional filters
+      tags:
+        - Facturas
+      parameters:
+        - in: query
+          name: suscripcionId
+          schema:
+            type: string
+            format: uuid
+          description: Filter by subscription ID
+        - in: query
+          name: estado
+          schema:
+            type: string
+            enum: [Pendiente, Pagada, Vencida, Anulada]
+          description: Filter by invoice status
+      responses:
+        '200':
+          description: Successfully retrieved invoices
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/FacturaResponse'
+        '500':
+          description: Internal server error
+
+  /api/v1/facturas/{id}:
+    get:
+      summary: Get invoice by ID
+      description: Retrieve detailed invoice information
+      tags:
+        - Facturas
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Invoice ID
+      responses:
+        '200':
+          description: Successfully retrieved invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacturaDetailsResponse'
+        '404':
+          description: Invoice not found
+        '500':
+          description: Internal server error
+
+  /api/v1/cupones:
+    get:
+      summary: Get active coupons
+      description: Retrieve all active discount coupons
+      tags:
+        - Cupones
+      responses:
+        '200':
+          description: Successfully retrieved coupons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CuponDescuentoResponse'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a discount coupon
+      description: Create a new discount coupon
+      tags:
+        - Cupones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCuponRequest'
+      responses:
+        '201':
+          description: Coupon created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CuponDescuentoResponse'
+        '400':
+          description: Validation error
+        '500':
+          description: Internal server error
+
+  /api/v1/cupones/validar:
+    post:
+      summary: Validate coupon code
+      description: Check if a coupon code is valid for use
+      tags:
+        - Cupones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codigo:
+                  type: string
+                  description: Coupon code to validate
+                montoCompra:
+                  type: number
+                  description: Purchase amount for percentage calculations
+              required:
+                - codigo
+      responses:
+        '200':
+          description: Coupon validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidarCuponResponse'
+        '400':
+          description: Invalid or expired coupon
+        '500':
+          description: Internal server error
 
 components:
   schemas:
-    CandidateListResponse:
+    # Cliente schemas
+    ClienteListResponse:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Candidate'
+            $ref: '#/components/schemas/ClienteResponse'
         metadata:
           $ref: '#/components/schemas/PaginationMetadata'
       required:
         - data
-        - metadata
+        - metadata'
 
-    Candidate:
+    ClienteResponse:
       type: object
       properties:
         id:
-          type: integer
-          description: Unique candidate identifier
-        firstName:
           type: string
-          description: Candidate's first name
-        lastName:
+          format: uuid
+          description: Customer ID
+        nombre:
           type: string
-          description: Candidate's last name
+          description: Customer full name
         email:
           type: string
           format: email
-          description: Candidate's email address
-        phone:
+          description: Customer email
+        telefono:
           type: string
           nullable: true
-          description: Candidate's phone number
-        address:
+          description: Phone number
+        tipoDocumento:
           type: string
-          nullable: true
-          description: Candidate's address
-        educations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Education'
-        workExperiences:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkExperience'
-        resumes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Resume'
-        applications:
-          type: array
-          items:
-            $ref: '#/components/schemas/Application'
-      required:
-        - firstName
-        - lastName
-        - email
-
-    CandidateDetails:
-      allOf:
-        - $ref: '#/components/schemas/Candidate'
-        - type: object
-          properties:
-            applications:
-              type: array
-              items:
-                allOf:
-                  - $ref: '#/components/schemas/Application'
-                  - type: object
-                    properties:
-                      position:
-                        type: object
-                        properties:
-                          id:
-                            type: integer
-                          title:
-                            type: string
-                      interviews:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Interview'
-
-    CreateCandidateRequest:
-      type: object
-      properties:
-        firstName:
+          description: Document type (DNI/CUIT/CUIL)
+        numeroDocumento:
           type: string
-          description: Candidate's first name
-        lastName:
+          description: Document number
+        estado:
           type: string
-          description: Candidate's last name
-        email:
+          enum: [Activo, Inactivo, Suspendido]
+          description: Customer status
+        fechaAlta:
           type: string
-          format: email
-          description: Candidate's email address
-        phone:
-          type: string
-          nullable: true
-          description: Candidate's phone number
-        address:
-          type: string
-          nullable: true
-          description: Candidate's address
-        educations:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateEducationRequest'
-        workExperiences:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateWorkExperienceRequest'
-        cv:
-          $ref: '#/components/schemas/CreateResumeRequest'
-      required:
-        - firstName
-        - lastName
-        - email
-
-    CreateCandidateResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Created candidate ID
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-          nullable: true
-        address:
-          type: string
-          nullable: true
+          format: date-time
+          description: Registration date
       required:
         - id
-        - firstName
-        - lastName
+        - nombre
         - email
+        - tipoDocumento
+        - numeroDocumento
+        - estado
+        - fechaAlta
 
-    UpdateCandidateStageRequest:
+    ClienteDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ClienteResponse'
+        - type: object
+          properties:
+            fechaNacimiento:
+              type: string
+              format: date
+              nullable: true
+            provincia:
+              type: string
+              nullable: true
+            localidad:
+              type: string
+              nullable: true
+            direccion:
+              type: string
+              nullable: true
+            codigoPostal:
+              type: string
+              nullable: true
+            origen:
+              type: string
+              nullable: true
+            suscripciones:
+              type: array
+              items:
+                $ref: '#/components/schemas/SuscripcionResponse'
+            metodosPago:
+              type: array
+              items:
+                $ref: '#/components/schemas/MetodoPagoResponse'
+            direccionesEntrega:
+              type: array
+              items:
+                $ref: '#/components/schemas/DireccionEntregaResponse'
+
+    CreateClienteRequest:
       type: object
       properties:
-        applicationId:
+        nombre:
           type: string
-          description: Application ID (will be converted to integer)
-        currentInterviewStep:
+          maxLength: 255
+          description: Customer full name
+        email:
           type: string
-          description: Current interview step (will be converted to integer)
-      required:
-        - applicationId
-        - currentInterviewStep
-
-    UpdateCandidateStageResponse:
-      type: object
-      properties:
-        message:
+          format: email
+          maxLength: 255
+          description: Customer email
+        telefono:
           type: string
-          example: "Candidate stage updated successfully"
-        data:
-          $ref: '#/components/schemas/Application'
-
-    Position:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Position unique identifier
-        companyId:
-          type: integer
-          description: Associated company ID
-        interviewFlowId:
-          type: integer
-          description: Associated interview flow ID
-        title:
-          type: string
-          description: Position title
-        description:
-          type: string
-          description: Position description
-        status:
-          type: string
-          description: Position status
-          default: "Draft"
-        isVisible:
-          type: boolean
-          description: Whether position is visible to candidates
-          default: false
-        location:
-          type: string
-          description: Position location
-        jobDescription:
-          type: string
-          description: Detailed job description
-        requirements:
-          type: string
+          maxLength: 20
           nullable: true
-          description: Position requirements
-        responsibilities:
+        tipoDocumento:
           type: string
-          nullable: true
-          description: Position responsibilities
-        salaryMin:
-          type: number
-          nullable: true
-          description: Minimum salary
-        salaryMax:
-          type: number
-          nullable: true
-          description: Maximum salary
-        employmentType:
+          maxLength: 10
+          description: Document type
+        numeroDocumento:
           type: string
-          nullable: true
-          description: Type of employment
-        benefits:
+          maxLength: 20
+          description: Document number
+        fechaNacimiento:
           type: string
+          format: date
           nullable: true
-          description: Position benefits
-        companyDescription:
-          type: string
-          nullable: true
-          description: Company description
-        applicationDeadline:
-          type: string
-          format: date-time
-          nullable: true
-          description: Application deadline
-        contactInfo:
-          type: string
-          nullable: true
-          description: Contact information
-      required:
-        - companyId
-        - interviewFlowId
-        - title
-        - description
-        - location
-        - jobDescription
-
-    UpdatePositionRequest:
-      type: object
-      properties:
-        companyId:
-          type: integer
-          minimum: 1
-          description: Associated company ID (must be a positive integer)
-        interviewFlowId:
-          type: integer
-          minimum: 1
-          description: Associated interview flow ID (must be a positive integer)
-        title:
+        provincia:
           type: string
           maxLength: 100
-          minLength: 1
-          description: Position title (required, 1-100 characters)
-        description:
-          type: string
-          minLength: 1
-          description: Position description (required, cannot be empty)
-        status:
-          type: string
-          enum: [Open, Contratado, Cerrado, Borrador]
-          description: Position status (must be one of the valid status values)
-        isVisible:
-          type: boolean
-          description: Whether position is visible to candidates
-        location:
-          type: string
-          minLength: 1
-          description: Position location (required, cannot be empty)
-        jobDescription:
-          type: string
-          minLength: 1
-          description: Detailed job description (required, cannot be empty)
-        requirements:
-          type: string
           nullable: true
-          description: Position requirements
-        responsibilities:
+        localidad:
           type: string
+          maxLength: 100
           nullable: true
-          description: Position responsibilities
-        salaryMin:
-          type: number
-          minimum: 0
+        direccion:
+          type: string
+          maxLength: 500
           nullable: true
-          description: Minimum salary (must be >= 0, cannot be greater than salaryMax)
-        salaryMax:
-          type: number
-          minimum: 0
+        codigoPostal:
+          type: string
+          maxLength: 10
           nullable: true
-          description: Maximum salary (must be >= 0, cannot be less than salaryMin)
-        employmentType:
+        origen:
           type: string
-          nullable: true
-          description: Type of employment
-        benefits:
-          type: string
-          nullable: true
-          description: Position benefits
-        companyDescription:
-          type: string
-          nullable: true
-          description: Company description
-        applicationDeadline:
-          type: string
-          format: date-time
-          nullable: true
-          description: Application deadline (must be a future date)
-        contactInfo:
-          type: string
-          nullable: true
-          description: Contact information
-
-    UpdatePositionResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: "Position updated successfully"
-        data:
-          $ref: '#/components/schemas/Position'
-
-    PositionCandidate:
-      type: object
-      properties:
-        fullName:
-          type: string
-          description: Candidate's full name
-        currentInterviewStep:
-          type: string
-          description: Current interview step name
-        candidateId:
-          type: integer
-          description: Candidate ID
-        applicationId:
-          type: integer
-          description: Application ID
-        averageScore:
-          type: number
-          description: Average interview score
+          enum: [Web, CallCenter, Tienda, Partner]
+          description: Acquisition source
       required:
-        - fullName
-        - currentInterviewStep
-        - candidateId
-        - applicationId
-        - averageScore
+        - nombre
+        - email
+        - tipoDocumento
+        - numeroDocumento
 
-    CandidateName:
-      type: object
-      properties:
-        candidateId:
-          type: integer
-          description: Candidate ID
-        fullName:
-          type: string
-          description: Candidate's full name
-      required:
-        - candidateId
-        - fullName
-
-    InterviewFlowResponse:
-      type: object
-      properties:
-        interviewFlow:
-          type: object
-          properties:
-            positionName:
-              type: string
-              description: Position title
-            interviewFlow:
-              $ref: '#/components/schemas/InterviewFlow'
-
-    InterviewFlow:
+    # Plan schemas
+    PlanResponse:
       type: object
       properties:
         id:
-          type: integer
-          description: Interview flow ID
-        description:
           type: string
-          description: Interview flow description
-        interviewSteps:
+          format: uuid
+        nombre:
+          type: string
+          description: Plan name
+        descripcion:
+          type: string
+          nullable: true
+        precio:
+          type: number
+          format: decimal
+          description: Monthly price
+        periodoFacturacion:
+          type: string
+          enum: [Mensual, Trimestral, Anual]
+          description: Billing period
+        diasTrial:
+          type: integer
+          description: Trial days
+        permitePausa:
+          type: boolean
+          description: Allows pause
+        esPlanDigital:
+          type: boolean
+          description: Digital-only plan
+        incluyeEntregaFisica:
+          type: boolean
+          description: Includes physical delivery
+        estado:
+          type: string
+          enum: [Activo, Inactivo, Borrador]
+        beneficios:
           type: array
           items:
-            $ref: '#/components/schemas/InterviewStep'
-
-    InterviewStep:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Interview step ID
-        interviewFlowId:
-          type: integer
-          description: Associated interview flow ID
-        interviewTypeId:
-          type: integer
-          description: Associated interview type ID
-        name:
-          type: string
-          description: Interview step name
-        orderIndex:
-          type: integer
-          description: Step order in the interview flow
-
-    Education:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Education record ID
-        candidateId:
-          type: integer
-          description: Associated candidate ID
-        institution:
-          type: string
-          description: Educational institution name
-        title:
-          type: string
-          description: Degree or certification title
-        startDate:
-          type: string
-          format: date-time
-          description: Education start date
-        endDate:
-          type: string
-          format: date-time
-          nullable: true
-          description: Education end date
+            $ref: '#/components/schemas/PlanBeneficioResponse'
       required:
-        - institution
-        - title
-        - startDate
+        - id
+        - nombre
+        - precio
+        - periodoFacturacion
+        - estado
 
-    CreateEducationRequest:
+    CreatePlanRequest:
       type: object
       properties:
-        institution:
+        nombre:
           type: string
-          description: Educational institution name
-        title:
+          maxLength: 100
+          description: Plan name
+        descripcion:
           type: string
-          description: Degree or certification title
-        startDate:
-          type: string
-          format: date-time
-          description: Education start date
-        endDate:
-          type: string
-          format: date-time
+          maxLength: 500
           nullable: true
-          description: Education end date
-      required:
-        - institution
-        - title
-        - startDate
-
-    WorkExperience:
-      type: object
-      properties:
-        id:
+        precio:
+          type: number
+          minimum: 0
+          description: Monthly price
+        periodoFacturacion:
+          type: string
+          enum: [Mensual, Trimestral, Anual]
+        diasTrial:
           type: integer
-          description: Work experience record ID
-        candidateId:
+          minimum: 0
+          default: 0
+        permitePausa:
+          type: boolean
+          default: false
+        maxProductos:
           type: integer
-          description: Associated candidate ID
-        company:
-          type: string
-          description: Company name
-        position:
-          type: string
-          description: Job position title
-        description:
-          type: string
           nullable: true
-          description: Job description
-        startDate:
-          type: string
-          format: date-time
-          description: Employment start date
-        endDate:
-          type: string
-          format: date-time
-          nullable: true
-          description: Employment end date
-      required:
-        - company
-        - position
-        - startDate
-
-    CreateWorkExperienceRequest:
-      type: object
-      properties:
-        company:
-          type: string
-          description: Company name
-        position:
-          type: string
-          description: Job position title
-        description:
-          type: string
-          nullable: true
-          description: Job description
-        startDate:
-          type: string
-          format: date-time
-          description: Employment start date
-        endDate:
-          type: string
-          format: date-time
-          nullable: true
-          description: Employment end date
-      required:
-        - company
-        - position
-        - startDate
-
-    Resume:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Resume record ID
-        candidateId:
-          type: integer
-          description: Associated candidate ID
-        filePath:
-          type: string
-          description: Resume file path
-        fileType:
-          type: string
-          description: Resume file MIME type
-      required:
-        - filePath
-        - fileType
-
-    CreateResumeRequest:
-      type: object
-      properties:
-        filePath:
-          type: string
-          description: Resume file path
-        fileType:
-          type: string
-          description: Resume file MIME type
-      required:
-        - filePath
-        - fileType
-
-    Application:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Application ID
-        candidateId:
-          type: integer
-          description: Associated candidate ID
-        positionId:
-          type: integer
-          description: Associated position ID
-        applicationDate:
-          type: string
-          format: date-time
-          description: Application submission date
-        currentInterviewStep:
-          type: integer
-          description: Current interview step ID
-        notes:
-          type: string
-          nullable: true
-          description: Application notes
-
-    Interview:
-      type: object
-      properties:
-        interviewDate:
-          type: string
-          format: date-time
-          description: Interview date and time
-        interviewStep:
+        esPlanDigital:
+          type: boolean
+          default: false
+        incluyeEntregaFisica:
+          type: boolean
+          default: false
+        caracteristicas:
           type: object
-          properties:
-            name:
-              type: string
-              description: Interview step name
-        notes:
+          nullable: true
+          description: JSON features object
+      required:
+        - nombre
+        - precio
+        - periodoFacturacion
+
+    PlanBeneficioResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        descripcion:
           type: string
           nullable: true
-          description: Interview notes
-        score:
+        tipo:
+          type: string
+          enum: [DigitalAccess, PhysicalDelivery, Discount, Content]
+        esBeneficioBase:
+          type: boolean
+
+    # Suscripcion schemas
+    SuscripcionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuscripcionResponse'
+        metadata:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - data
+        - metadata'
+
+    SuscripcionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        numeroSuscripcion:
+          type: string
+          description: Human-readable subscription number
+        estado:
+          type: string
+          enum: [Pendiente, Activa, Pausada, Cancelada, Vencida]
+        fechaInicio:
+          type: string
+          format: date-time
+        fechaFin:
+          type: string
+          format: date-time
+          nullable: true
+        fechaProximoVencimiento:
+          type: string
+          format: date-time
+        precioFinal:
+          type: number
+          format: decimal
+        clienteId:
+          type: string
+          format: uuid
+        planId:
+          type: string
+          format: uuid
+        origen:
+          type: string
+          enum: [Web, App, CallCenter, Tienda]
+      required:
+        - id
+        - numeroSuscripcion
+        - estado
+        - fechaInicio
+        - precioFinal
+        - clienteId
+        - planId
+        - origen
+
+    SuscripcionDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuscripcionResponse'
+        - type: object
+          properties:
+            fechaCancelacion:
+              type: string
+              format: date-time
+              nullable: true
+            motivoCancelacion:
+              type: string
+              nullable: true
+            periodicidad:
+              type: string
+            notas:
+              type: string
+              nullable: true
+            fechaAlta:
+              type: string
+              format: date-time
+            cliente:
+              $ref: '#/components/schemas/ClienteResponse'
+            plan:
+              $ref: '#/components/schemas/PlanResponse'
+            productos:
+              type: array
+              items:
+                $ref: '#/components/schemas/SuscripcionProductoResponse'
+            facturas:
+              type: array
+              items:
+                $ref: '#/components/schemas/FacturaResponse'
+
+    CreateSuscripcionRequest:
+      type: object
+      properties:
+        clienteId:
+          type: string
+          format: uuid
+          description: Customer ID
+        planId:
+          type: string
+          format: uuid
+          description: Plan ID
+        cuponDescuentoId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Discount coupon ID
+        direccionEntregaId:
+          type: string
+          format: uuid
+          nullable: true
+          description: Delivery address ID (for physical plans)
+        origen:
+          type: string
+          enum: [Web, App, CallCenter, Tienda]
+          default: Web
+        productos:
+          type: array
+          items:
+            type: object
+            properties:
+              productoId:
+                type: string
+                format: uuid
+              cantidad:
+                type: integer
+                minimum: 1
+                default: 1
+          description: Products to include in subscription
+      required:
+        - clienteId
+        - planId
+        - origen
+
+    UpdateSuscripcionRequest:
+      type: object
+      properties:
+        estado:
+          type: string
+          enum: [Pendiente, Activa, Pausada, Cancelada, Vencida]
+          description: Subscription status
+        notas:
+          type: string
+          maxLength: 1000
+          nullable: true
+
+    SuscripcionProductoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cantidad:
+          type: integer
+        precioUnitario:
+          type: number
+          format: decimal
+        productoId:
+          type: string
+          format: uuid
+        productoNombre:
+          type: string
+        fechaAgregado:
+          type: string
+          format: date-time
+
+    # Factura schemas
+    FacturaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        numeroFactura:
+          type: string
+          description: Invoice number
+        fechaEmision:
+          type: string
+          format: date-time
+        fechaVencimiento:
+          type: string
+          format: date-time
+        subtotal:
+          type: number
+          format: decimal
+        impuestos:
+          type: number
+          format: decimal
+        descuentos:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+        estado:
+          type: string
+          enum: [Pendiente, Pagada, Vencida, Anulada]
+        suscripcionId:
+          type: string
+          format: uuid
+      required:
+        - id
+        - numeroFactura
+        - fechaEmision
+        - total
+        - estado
+
+    FacturaDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/FacturaResponse'
+        - type: object
+          properties:
+            periodoDesde:
+              type: string
+              format: date-time
+            periodoHasta:
+              type: string
+              format: date-time
+            fechaPago:
+              type: string
+              format: date-time
+              nullable: true
+            codigoAutorizacion:
+              type: string
+              nullable: true
+            observaciones:
+              type: string
+              nullable: true
+            metodoPago:
+              $ref: '#/components/schemas/MetodoPagoResponse'
+            detalles:
+              type: array
+              items:
+                $ref: '#/components/schemas/FacturaDetalleResponse'
+
+    FacturaDetalleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        descripcion:
+          type: string
+        cantidad:
+          type: integer
+        precioUnitario:
+          type: number
+          format: decimal
+        importe:
+          type: number
+          format: decimal
+        tipoItem:
+          type: string
+          enum: [Product, Service, Discount, Tax]
+
+    # MetodoPago schemas
+    MetodoPagoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tipo:
+          type: string
+          enum: [TarjetaCredito, TarjetaDebito, CuentaMP, TarjetaLN]
+        ultimosDigitos:
+          type: string
+          maxLength: 4
+        titular:
+          type: string
+        fechaVencimiento:
+          type: string
+          format: date
+          nullable: true
+        marca:
+          type: string
+          nullable: true
+        esMetodoPrincipal:
+          type: boolean
+
+    # DireccionEntrega schemas
+    DireccionEntregaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        alias:
+          type: string
+        direccion:
+          type: string
+        pisoDepartamento:
+          type: string
+          nullable: true
+        codigoPostal:
+          type: string
+        provincia:
+          type: string
+        localidad:
+          type: string
+        entreCalles:
+          type: string
+          nullable: true
+        instruccionesEntrega:
+          type: string
+          nullable: true
+        telefonoContacto:
+          type: string
+          nullable: true
+        esDireccionPrincipal:
+          type: boolean
+
+    # Cupon schemas
+    CuponDescuentoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        codigo:
+          type: string
+        tipoDescuento:
+          type: string
+          enum: [Percentage, FixedAmount]
+        valorDescuento:
+          type: number
+          format: decimal
+        montoMinimo:
+          type: number
+          format: decimal
+          nullable: true
+        montoMaximoDescuento:
+          type: number
+          format: decimal
+          nullable: true
+        fechaInicioValidez:
+          type: string
+          format: date-time
+        fechaFinValidez:
+          type: string
+          format: date-time
+        esActivo:
+          type: boolean
+        cantidadUsosActual:
+          type: integer
+        cantidadMaximaUsos:
+          type: integer
+          nullable: true
+        descripcion:
+          type: string
+          nullable: true
+
+    CreateCuponRequest:
+      type: object
+      properties:
+        codigo:
+          type: string
+          maxLength: 50
+          description: Unique coupon code
+        tipoDescuento:
+          type: string
+          enum: [Percentage, FixedAmount]
+        valorDescuento:
+          type: number
+          minimum: 0
+          description: Discount value
+        montoMinimo:
           type: number
           nullable: true
-          description: Interview score
+        montoMaximoDescuento:
+          type: number
+          nullable: true
+        cantidadMaximaUsos:
+          type: integer
+          nullable: true
+        fechaInicioValidez:
+          type: string
+          format: date-time
+        fechaFinValidez:
+          type: string
+          format: date-time
+        planesAplicables:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          description: Plan IDs this coupon applies to (null = all plans)
+        descripcion:
+          type: string
+          nullable: true
+      required:
+        - codigo
+        - tipoDescuento
+        - valorDescuento
+        - fechaInicioValidez
+        - fechaFinValidez
 
-    FileUploadResponse:
+    ValidarCuponResponse:
       type: object
       properties:
-        filePath:
+        valido:
+          type: boolean
+        codigo:
           type: string
-          description: Uploaded file path
-        fileType:
+        tipoDescuento:
           type: string
-          description: Uploaded file MIME type
-      required:
-        - filePath
-        - fileType
+          nullable: true
+        valorDescuento:
+          type: number
+          format: decimal
+          nullable: true
+        descuentoCalculado:
+          type: number
+          format: decimal
+          nullable: true
+        mensaje:
+          type: string
+          description: Validation message
 
+    # Common schemas
     PaginationMetadata:
       type: object
       properties:
         total:
           type: integer
-          description: Total number of records
+          description: Total records
         page:
           type: integer
-          description: Current page number
+          description: Current page
         limit:
           type: integer
-          description: Records per page
+          description: Items per page
         totalPages:
           type: integer
-          description: Total number of pages
-      required:
-        - total
-        - page
-        - limit
-        - totalPages
+          description: Total pages
 
     ErrorResponse:
       type: object
@@ -1078,16 +1189,25 @@ components:
         message:
           type: string
           description: Error message
-        error:
+        code:
           type: string
-          description: Detailed error information
+          description: Error code
+        details:
+          type: object
+          nullable: true
+          description: Additional error details
       required:
         - message
+        - code
 
 tags:
-  - name: Candidates
-    description: Operations related to candidate management
-  - name: Positions
-    description: Operations related to job position management
-  - name: File Upload
-    description: Operations related to file uploads
+  - name: Clientes
+    description: Customer management operations
+  - name: Planes
+    description: Plan management operations
+  - name: Suscripciones
+    description: Subscription lifecycle operations
+  - name: Facturas
+    description: Invoice management operations
+  - name: Cupones
+    description: Discount coupon operations

@@ -78,7 +78,63 @@ implement-frontend-plan @HU-501_frontend.md
 
 ---
 
-### 3. `scaffold-monorepo-backend-app`
+### 3. `maintain-data-model`
+
+**Purpose**: Automatically extract entity definitions from .NET Domain layer and keep `ai-specs/specs/data-model.md` synchronized.
+
+**Usage**:
+```
+maintain-data-model apps/MyProject.Api MyProject.Domain.Entities [Suscripcion, Cliente, Plan]
+```
+
+**What it does**:
+1. Locates domain entity files in `[Project].Domain/`
+2. Extracts class metadata: properties, data types, nullable constraints
+3. Identifies validation rules from `[Required]`, `[MaxLength]`, `[Range]` attributes
+4. Discovers relationships from navigation properties and foreign keys
+5. Generates markdown documentation with fields, validation, and relationships
+6. Updates or creates entity sections in `data-model.md`
+7. Preserves existing manual documentation
+8. Maintains markdown consistency and documentation standards
+
+**Supports**:
+- C# DataAnnotation attributes (`[Required]`, `[MaxLength]`, `[Range]`, etc.)
+- Navigation properties for relationship discovery
+- Public property extraction from domain entities
+- Markdown generation with proper formatting
+
+**Integrates with**:
+- `implement-backend-plan` (Step 11: Documentation)
+- Step 8: Update documentation → Data Model Update → maintain-data-model skill
+
+**Standards**:
+- `ai-specs/specs/data-model.md`
+- `ai-specs/specs/documentation-standards.mdc`
+
+---
+
+### 4. `implement-database-migration`
+
+**Purpose**: Design and apply versioned MySQL schema migrations aligned with `ai-specs/specs/data-model.md`.
+
+**Usage**:
+```
+implement-database-migration
+```
+
+**What it does**:
+1. Identifies required schema changes from the feature plan
+2. Updates `ai-specs/specs/data-model.md` when needed
+3. Creates/updates a versioned migration under `ai-specs/specs/db/migrations/mysql/`
+4. Applies the migration locally (dev validation) and verifies tables/foreign keys
+5. Captures rollback notes and links the migration in the change artifact
+
+**Standards**:
+- `ai-specs/specs/schema-management.md`
+
+---
+
+### 5. `scaffold-monorepo-backend-app`
 
 **Purpose**: Scaffold a new backend app inside the Nx + .NET monorepo using the corporate app generator.
 
@@ -101,7 +157,7 @@ scaffold-monorepo-backend-app
 
 ---
 
-### 4. `scaffold-monorepo-lambda`
+### 6. `scaffold-monorepo-lambda`
 
 **Purpose**: Scaffold a new .NET 8 Lambda in the monorepo using the Lambda generator flow.
 
@@ -124,7 +180,7 @@ scaffold-monorepo-lambda
 
 ---
 
-### 5. `validate-monorepo-integration`
+### 7. `validate-monorepo-integration`
 
 **Purpose**: Validate that a generated or modified monorepo artifact is correctly integrated into the workspace.
 
@@ -321,7 +377,7 @@ Each AI tool loads skills from its respective directory.
 
 Potential skills to add:
 
-- `implement-database-migration` - Autonomous database schema updates
+- `implement-database-migration` - Autonomous database schema updates (placeholder now defined in `.skills/implement-database-migration`)
 - `implement-integration-tests` - End-to-end test implementation
 - `implement-deployment-pipeline` - CI/CD configuration
 - `refactor-to-pattern` - Autonomous refactoring to architectural patterns

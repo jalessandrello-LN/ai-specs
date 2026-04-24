@@ -74,6 +74,7 @@ Create a markdown file at: `ai-specs/changes/[TICKET-ID]_backend.md`
 
 **Backend Type**: [API | Listener]
 **Template**: [LaNacion.Core.Templates.Web.Api.Minimal | ln-SQSlstnr]
+**Standards**: [`ai-specs/specs/ln-susc-api-standards.mdc` | `ai-specs/specs/ln-susc-listener-standards.mdc`]
 **Architecture**: Clean Architecture + CQRS + [Event Publishing | Event Processing]
 
 ## Architecture Context
