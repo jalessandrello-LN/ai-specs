@@ -91,6 +91,25 @@ All agents follow the base development standards defined in:
 - `npm run generate:template` for APIs and listeners
 - `npm run generate:lambda` for Lambdas
 
+### 7. Project.md Architect
+**File**: `ai-specs/.agents/project-md-architect.md`  
+**Purpose**: Synthesizes a root `project.md` from architecture, functional, and naming-policy documents so OpenSpec workflows can consume project configuration consistently  
+**Primary Sources**:
+- `_docs de soporte/architecture-1.solution-architecture.md`
+- `_docs de soporte/architecture-2.webapis-architecture.md`
+- `_docs de soporte/architecture-3.listener-architecture.md`
+- `_docs de proyecto/Funcional-spec-dd.md`
+- `_docs de proyecto/requerimientos.md`
+- `_docs de soporte/coding-naming-1.-events-and-commands-naming.md`
+- `_docs de soporte/coding-naming-2-webapi-endpoint-naming.md`
+- `_docs de soporte/coding-naming-3.-aws-resources-naming.md`
+
+**When to use**: When the repository does not yet have `project.md`, or when `project.md` must be regenerated from current architecture and functional documentation  
+**Command**: `/create-project-md`
+**Skill**: `ai-specs/.skills/create-project-md/SKILL.md`
+
+**Output**: Generates `project.md` in the repository root with technology stack, standards, naming conventions, architecture patterns, workflow, workspace structure, and quality gates
+
 ## Spec-Driven Development Workflow
 
 ### Backend Development Flow
@@ -287,6 +306,33 @@ For starting new large projects with Vision.md and arquitectura.md, use the Open
 **When to use**: Starting a new large project with microservices architecture
 
 **See**: `OPENSPEC-LARGE-PROJECT-WORKFLOW.md` for detailed documentation
+
+## Project Configuration Generation
+
+Before running large-project planning in repositories that still do not have `project.md`, generate it from the existing architecture and functional documentation:
+
+### Command: `/create-project-md`
+
+**Purpose**: Create or refresh the root `project.md` configuration file used by OpenSpec workflows
+
+**Workflow**:
+```
+1. Analyze architecture documents (architecture-1/2/3)
+2. Analyze functional documents (Funcional-spec-dd.md and/or requerimientos.md)
+3. Analyze naming policy documents (coding-naming-1/2/3)
+4. Synthesize project configuration
+5. Generate project.md at repository root
+```
+
+**Output**:
+- `project.md` - Project configuration source of truth for:
+  - technology stack
+  - standards
+  - naming conventions
+  - architecture patterns
+  - agent workflow
+
+**When to use**: Before `/plan-large-project` when the repository has architecture + functional docs but still lacks `project.md`
 
 ## Standards Reference
 

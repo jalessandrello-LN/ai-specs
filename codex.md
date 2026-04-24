@@ -28,12 +28,16 @@ All agents follow the base development standards defined in:
 
 **Output**: Generates `ai-specs/changes/[TICKET-ID]_backend.md` with complete implementation plan
 
+**Data Model Reference**: `ai-specs/specs/data-model.md` - Domain entities for La Nacion Suscripciones
+
 ### 3. API Developer (La Nación)
 **File**: `ai-specs/.agents/lanacion-api-developer.md`  
 **Purpose**: Implements REST APIs using LaNacion.Core.Templates.Web.Api.Minimal  
 **Technology**: .NET 6, ASP.NET Core Minimal APIs, MediatR, Dapper  
 **Architecture**: Clean Architecture + CQRS + Event Publishing (Outbox Pattern)  
 **Standards**: `ai-specs/specs/ln-susc-api-standards.mdc`
+**API Spec**: `ai-specs/specs/api-spec.yml`
+**Data Model**: `ai-specs/specs/data-model.md`
 
 **When to use**: To implement HTTP REST endpoints that modify or query state  
 **Command**: `/develop-backend @[TICKET-ID]_backend.md` (when plan references API standards)
@@ -71,6 +75,41 @@ All agents follow the base development standards defined in:
 - `/plan-frontend-ticket [TICKET-ID]`
 - `/develop-frontend @[TICKET-ID]_frontend.md`
 
+### 6. Nx Monorepo Developer
+**File**: `ai-specs/.agents/lanacion-nx-monorepo-developer.md`  
+**Purpose**: Creates and integrates new monorepo projects for Minimal APIs, SQS listeners, and Lambdas using the Nx + .NET template  
+**Technology**: Nx, .NET 6/8, AWS CDK, Docker, Azure Artifacts  
+**Architecture**: Hybrid monorepo (Nx orchestration + .NET build + co-located CDK)  
+**References**:
+- `ai-specs/scr/template-nx-dotnet-desde-cero.md`
+- `ai-specs/scr/arq-monorepo.md`
+- `ai-specs/specs/ln-susc-api-standards.mdc`
+- `ai-specs/specs/ln-susc-listener-standards.mdc`
+
+**When to use**: To scaffold a new API, listener, or Lambda from scratch inside the monorepo and leave it integrated with `.sln`, `project.json`, tests, and `cdk/`  
+**Primary entrypoints**:
+- `npm run generate:template` for APIs and listeners
+- `npm run generate:lambda` for Lambdas
+
+### 7. Project.md Architect
+**File**: `ai-specs/.agents/project-md-architect.md`  
+**Purpose**: Synthesizes a root `project.md` from architecture, functional, and naming-policy documents so OpenSpec workflows can consume project configuration consistently  
+**Primary Sources**:
+- `_docs de soporte/architecture-1.solution-architecture.md`
+- `_docs de soporte/architecture-2.webapis-architecture.md`
+- `_docs de soporte/architecture-3.listener-architecture.md`
+- `_docs de proyecto/Funcional-spec-dd.md`
+- `_docs de proyecto/requerimientos.md`
+- `_docs de soporte/coding-naming-1.-events-and-commands-naming.md`
+- `_docs de soporte/coding-naming-2-webapi-endpoint-naming.md`
+- `_docs de soporte/coding-naming-3.-aws-resources-naming.md`
+
+**When to use**: When the repository does not yet have `project.md`, or when `project.md` must be regenerated from current architecture and functional documentation  
+**Command**: `/create-project-md`
+**Skill**: `ai-specs/.skills/create-project-md/SKILL.md`
+
+**Output**: Generates `project.md` in the repository root with technology stack, standards, naming conventions, architecture patterns, workflow, workspace structure, and quality gates
+
 ## Spec-Driven Development Workflow
 
 ### Backend Development Flow
@@ -103,6 +142,17 @@ All agents follow the base development standards defined in:
 │   → Use lanacion-api-developer                              │
 │ • If plan references ln-susc-listener-standards.mdc         │
 │   → Use lanacion-lstnr-developer                            │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Nota: si la tarea requiere scaffolding o integración del   │
+│ workspace (por ejemplo: dar de alta una nueva API, Listener │
+│ o Lambda dentro del monorepo), el flujo debe enrutar       │
+│ primero al agente `lanacion-nx-monorepo-developer`. Ese    │
+│ agente ejecuta el scaffolding/integración (p. ej.          │
+│ `scaffold-monorepo-backend-app`) y usa el generador del    │
+│ monorepo (`npm run generate:template`) como entrypoint     │
+│ para crear e integrar proyectos en la solución monorepo.    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -228,6 +278,61 @@ For advanced scenarios, use specialized commands in `ai-specs/.commands/lanacion
 - `/integrate-wcf-service` - Integrate legacy WCF service
 
 See `ai-specs/.commands/lanacion/README.md` for detailed documentation.
+
+## Large Project Planning
+
+For starting new large projects with Vision.md and arquitectura.md, use the OpenSpec planning workflow:
+
+### Command: `/plan-large-project`
+
+**Purpose**: Execute complete project planning from requirements documents
+
+**Workflow**:
+```
+1. Analyze Vision.md + arquitectura.md
+2. Create "planning-full-project" change
+3. Generate Epic Backlog, MVP Roadmap, HU List
+4. Scaffold individual HU changes
+5. Sync and archive
+```
+
+**Output**:
+- `planning-full-project/` - Planning artifacts
+- `epic-backlog.md` - All epicas
+- `mvp-roadmap.md` - Release schedule
+- `hu-list.md` - Complete HU backlog
+- `hu-XXX-[slug]/` - Individual HU change scaffolds
+
+**When to use**: Starting a new large project with microservices architecture
+
+**See**: `OPENSPEC-LARGE-PROJECT-WORKFLOW.md` for detailed documentation
+
+## Project Configuration Generation
+
+Before running large-project planning in repositories that still do not have `project.md`, generate it from the existing architecture and functional documentation:
+
+### Command: `/create-project-md`
+
+**Purpose**: Create or refresh the root `project.md` configuration file used by OpenSpec workflows
+
+**Workflow**:
+```
+1. Analyze architecture documents (architecture-1/2/3)
+2. Analyze functional documents (Funcional-spec-dd.md and/or requerimientos.md)
+3. Analyze naming policy documents (coding-naming-1/2/3)
+4. Synthesize project configuration
+5. Generate project.md at repository root
+```
+
+**Output**:
+- `project.md` - Project configuration source of truth for:
+  - technology stack
+  - standards
+  - naming conventions
+  - architecture patterns
+  - agent workflow
+
+**When to use**: Before `/plan-large-project` when the repository has architecture + functional docs but still lacks `project.md`
 
 ## Standards Reference
 

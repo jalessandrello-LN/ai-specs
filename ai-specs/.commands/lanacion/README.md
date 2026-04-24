@@ -20,6 +20,15 @@ Genera plan de implementación para un ticket de listener SQS.
 **Genera**: `ai-specs/changes/[TicketId]_backend.md` especializado en eventos, idempotencia y ProcessResult
 **Agente**: `lanacion-backend-planner`
 
+#### `/create-project-md`
+Genera o actualiza el `project.md` raíz a partir de documentos de arquitectura, requerimientos y naming.
+```
+/create-project-md
+```
+**Genera**: `project.md`
+**Skill**: `create-project-md`
+**Agente**: `project-md-architect`
+
 ### Monorepo (Scaffold)
 
 #### `/scaffold-api`
@@ -141,6 +150,16 @@ Elimina código de ejemplo del template no relacionado con la HU actual.
 
 ## 🎯 Flujos de Trabajo Típicos
 
+### Generar configuración base del proyecto
+
+```bash
+# 1. Analizar arquitectura + requerimientos + naming
+/create-project-md
+
+# 2. Continuar con planificación grande usando project.md como fuente
+/plan-large-project
+```
+
 ### Crear API REST desde cero (monorepo)
 
 ```bash
@@ -206,6 +225,7 @@ Elimina código de ejemplo del template no relacionado con la HU actual.
 
 ## 🔗 Comandos Relacionados
 
+- `/create-project-md` - Generar configuración raíz del proyecto
 - `/plan-backend-ticket` - Planificar implementación de API
 - `/plan-listener-ticket` - Planificar implementación de listener
 - `/develop-backend` - Implementar plan backend
