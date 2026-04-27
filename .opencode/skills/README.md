@@ -78,6 +78,126 @@ implement-frontend-plan @HU-501_frontend.md
 
 ---
 
+### 3. `maintain-data-model`
+
+**Purpose**: Automatically extract entity definitions from .NET Domain layer and keep `ai-specs/specs/data-model.md` synchronized.
+
+**Usage**:
+```
+maintain-data-model apps/MyProject.Api MyProject.Domain.Entities [Suscripcion, Cliente, Plan]
+```
+
+**What it does**:
+1. Locates domain entity files in `[Project].Domain/`
+2. Extracts class metadata: properties, data types, nullable constraints
+3. Identifies validation rules from `[Required]`, `[MaxLength]`, `[Range]` attributes
+4. Discovers relationships from navigation properties and foreign keys
+5. Generates markdown documentation with fields, validation, and relationships
+6. Updates or creates entity sections in `data-model.md`
+7. Preserves existing manual documentation
+8. Maintains markdown consistency and documentation standards
+
+**Supports**:
+- C# DataAnnotation attributes (`[Required]`, `[MaxLength]`, `[Range]`, etc.)
+- Navigation properties for relationship discovery
+- Public property extraction from domain entities
+- Markdown generation with proper formatting
+
+**Integrates with**:
+- `implement-backend-plan` (Step 11: Documentation)
+- Step 8: Update documentation → Data Model Update → maintain-data-model skill
+
+**Standards**:
+- `ai-specs/specs/data-model.md`
+- `ai-specs/specs/documentation-standards.mdc`
+
+---
+
+### 4. `implement-database-migration`
+
+**Purpose**: Design and apply versioned MySQL schema migrations aligned with `ai-specs/specs/data-model.md`.
+
+**Usage**:
+```
+implement-database-migration
+```
+
+**What it does**:
+1. Identifies required schema changes from the feature plan
+2. Updates `ai-specs/specs/data-model.md` when needed
+3. Creates/updates a versioned migration under `ai-specs/specs/db/migrations/mysql/`
+4. Applies the migration locally (dev validation) and verifies tables/foreign keys
+5. Captures rollback notes and links the migration in the change artifact
+
+**Standards**:
+- `ai-specs/specs/schema-management.md`
+
+---
+
+### 5. `scaffold-monorepo-backend-app`
+
+**Purpose**: Scaffold a new backend app inside the Nx + .NET monorepo using the corporate app generator.
+
+**Usage**:
+```
+scaffold-monorepo-backend-app
+```
+
+**What it does**:
+1. Confirms whether the request is for an API or a listener
+2. Uses the `add-template` generator flow
+3. Verifies output under `apps/`
+4. Verifies `.sln`, `project.json`, tests, Docker, `cdk/`, and VS Code integration
+5. Applies the right backend standards after generation
+
+**Supports**:
+- Minimal APIs
+- SQS listeners
+- Monorepo-native app scaffolding
+
+---
+
+### 6. `scaffold-monorepo-lambda`
+
+**Purpose**: Scaffold a new .NET 8 Lambda in the monorepo using the Lambda generator flow.
+
+**Usage**:
+```
+scaffold-monorepo-lambda
+```
+
+**What it does**:
+1. Validates Lambda naming and stack choice
+2. Uses the `add-lambda` generator flow
+3. Verifies app, tests, local runner, and CDK outputs
+4. Checks `.sln` integration
+5. Reviews known generator caveats before considering the scaffold complete
+
+**Supports**:
+- New Lambda stacks
+- Lambdas added to existing stacks
+- .NET 8 Lambda projects with local runner and CDK
+
+---
+
+### 7. `validate-monorepo-integration`
+
+**Purpose**: Validate that a generated or modified monorepo artifact is correctly integrated into the workspace.
+
+**Usage**:
+```
+validate-monorepo-integration
+```
+
+**What it does**:
+1. Verifies placement under `apps/` or `libs/`
+2. Checks `.sln` registration
+3. Checks `project.json`, tests, and `cdk/`
+4. Runs targeted build/test/synth validation
+5. Reports hard failures and soft caveats separately
+
+---
+
 ## Skills vs Commands
 
 | Aspect | Commands | Skills |
@@ -126,6 +246,7 @@ Tests Passed + Docs Updated
 4. **Resilience**: Pauses on errors instead of failing silently
 5. **Transparency**: Shows progress and status continuously
 6. **Documentation**: Updates docs automatically before completion
+7. **Scaffolding Reuse**: Shared monorepo scaffolding logic can live in reusable skills
 
 ## Skill Execution Flow
 
@@ -256,7 +377,7 @@ Each AI tool loads skills from its respective directory.
 
 Potential skills to add:
 
-- `implement-database-migration` - Autonomous database schema updates
+- `implement-database-migration` - Autonomous database schema updates (placeholder now defined in `.skills/implement-database-migration`)
 - `implement-integration-tests` - End-to-end test implementation
 - `implement-deployment-pipeline` - CI/CD configuration
 - `refactor-to-pattern` - Autonomous refactoring to architectural patterns

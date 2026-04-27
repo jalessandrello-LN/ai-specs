@@ -1,5 +1,0 @@
-description = "../../.agent/agents/lanacion-backend-planner.md"
-
-prompt = """
-../../.agent/agents/lanacion-backend-planner.md
-"""

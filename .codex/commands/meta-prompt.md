@@ -1,3 +1,1 @@
-```markdown
-../../ai-specs/.commands/meta-prompt.md
-```
+../../ai-specs/ai-specs/commands/meta-prompt.md

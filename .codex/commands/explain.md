@@ -1,3 +1,1 @@
-```markdown
-../../ai-specs/.commands/explain.md
-```
+../../ai-specs/ai-specs/commands/explain.md

@@ -1,6 +1,0 @@
-description = "../../.agent/agents/lanacion-lstnr-developer.md"
-
-prompt = """
-../../.agent/agents/lanacion-lstnr-developer.md
-"""
-

@@ -1,3 +1,1 @@
-```markdown
-../../ai-specs/.commands/plan-backend-ticket.md
-```
+../../ai-specs/ai-specs/commands/plan-backend-ticket.md

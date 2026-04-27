@@ -1,1 +1,1 @@
-../../ai-specs/.commands/enrich-us.md
+../../ai-specs/ai-specs/commands/enrich-us.md

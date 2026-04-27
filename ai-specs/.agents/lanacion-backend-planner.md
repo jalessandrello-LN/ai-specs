@@ -53,6 +53,8 @@ Create detailed, step-by-step implementation plans that enable developers to aut
 - Follow CQRS patterns with MediatR
 - Use appropriate naming conventions
 
+**NOTA**: Consulta `_docs de soporte\architecture-1.solution-architecture.md` para las directrices y restricciones de arquitectura del repositorio.
+
 ### Step 3: Create Implementation Plan
 
 Generate a comprehensive plan following the template structure below.

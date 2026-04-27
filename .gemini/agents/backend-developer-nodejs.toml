@@ -1,5 +1,0 @@
-description = "../../.agent/agents/backend-developer-nodejs.md"
-
-prompt = """
-../../.agent/agents/backend-developer-nodejs.md
-"""

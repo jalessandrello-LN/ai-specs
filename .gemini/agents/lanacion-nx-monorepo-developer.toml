@@ -1,6 +1,0 @@
-description = "../../.agent/agents/lanacion-nx-monorepo-developer.md"
-
-prompt = """
-../../.agent/agents/lanacion-nx-monorepo-developer.md
-"""
-

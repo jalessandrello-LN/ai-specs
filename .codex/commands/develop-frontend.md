@@ -1,3 +1,1 @@
-```markdown
-../../ai-specs/.commands/develop-frontend.md
-```
+../../ai-specs/ai-specs/commands/develop-frontend.md

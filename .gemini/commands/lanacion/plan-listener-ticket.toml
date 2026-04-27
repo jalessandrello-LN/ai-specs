@@ -1,5 +1,0 @@
-description = "../../ai-specs/.commands/lanacion/plan-listener-ticket.md"
-
-prompt = """
-../../ai-specs/.commands/lanacion/plan-listener-ticket.md
-"""

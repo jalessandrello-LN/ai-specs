@@ -1,5 +1,0 @@
-description = "../../ai-specs/.commands/lanacion/create-api-endpoint.md"
-
-prompt = """
-../../ai-specs/.commands/lanacion/create-api-endpoint.md
-"""

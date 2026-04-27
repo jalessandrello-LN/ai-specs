@@ -1,1 +1,1 @@
-../../ai-specs/.commands/plan-frontend-ticket.md
+../../ai-specs/ai-specs/commands/plan-frontend-ticket.md

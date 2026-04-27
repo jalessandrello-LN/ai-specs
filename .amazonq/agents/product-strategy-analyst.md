@@ -1,3 +1,1 @@
-```chatagent
-../../ai-specs/.agents/product-strategy-analyst.md
-```
+../../ai-specs/ai-specs/agents/product-strategy-analyst.md

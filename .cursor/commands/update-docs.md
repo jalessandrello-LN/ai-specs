@@ -1,1 +1,1 @@
-../../ai-specs/.commands/update-docs.md
+../../ai-specs/ai-specs/commands/update-docs.md

@@ -1,5 +1,0 @@
-description = "../../.agent/agents/product-strategy-analyst.md"
-
-prompt = """
-../../.agent/agents/product-strategy-analyst.md
-"""

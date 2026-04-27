@@ -1,5 +1,0 @@
-description = "../../ai-specs/.commands/lanacion/add-idempotency-check.md"
-
-prompt = """
-../../ai-specs/.commands/lanacion/add-idempotency-check.md
-"""

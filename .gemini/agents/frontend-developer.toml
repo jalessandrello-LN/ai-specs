@@ -1,5 +1,0 @@
-description = "../../.agent/agents/frontend-developer.md"
-
-prompt = """
-../../.agent/agents/frontend-developer.md
-"""
